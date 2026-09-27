@@ -1063,15 +1063,6 @@
               placeholder="Enter watermark text..." />
           </div>
 
-          <!-- Quick Text Presets -->
-          <div class="adder-presets-row mt-2">
-            <span class="text-xs text-muted">Quick Text:</span>
-            <button type="button" class="btn-adder-text-preset" data-text="© Copyright">© Copyright</button>
-            <button type="button" class="btn-adder-text-preset" data-text="Sample Video">Sample Video</button>
-            <button type="button" class="btn-adder-text-preset" data-text="Confidential">Confidential</button>
-            <button type="button" class="btn-adder-text-preset" data-text="@username">@username</button>
-          </div>
-
           <div class="adder-row-split mt-3">
             <div class="adder-col">
               <div class="font-label-row">
@@ -1679,6 +1670,8 @@
 
             <!-- Bulk Combo Queue Section -->
             <div id="bulk-combo-queue-wrapper" class="bulk-queue-wrapper hidden mt-4">
+              <!-- Queue Items List below Start Bulk Processing -->
+              <div id="bulk-combo-queue-list" class="bulk-queue-list mt-4"></div>
               <div class="bulk-header-card">
                 <!-- Strategy Switcher for Bulk Mode -->
                 <div class="tuner-preset-row mb-3">
@@ -1754,8 +1747,6 @@
                 </div>
               </div>
 
-              <!-- Queue Items List below Start Bulk Processing -->
-              <div id="bulk-combo-queue-list" class="bulk-queue-list mt-4"></div>
             </div>
           </main>
 
@@ -1809,26 +1800,14 @@
 
               <!-- Text Watermark Controls -->
               <div id="combo-text-controls" class="adder-config-card mt-3">
-                <div class="adder-field-group">
-                  <label class="adder-field-label" for="combo-text-input">Watermark Text:</label>
-                  <input type="text" id="combo-text-input" class="adder-text-field" value="© My Brand"
-                    placeholder="Enter watermark text..." />
-                </div>
 
-                <!-- Quick Text Presets -->
-                <div class="adder-presets-row mt-2">
-                  <span class="text-xs text-muted">Quick Text:</span>
-                  <button type="button" class="btn-adder-text-preset btn-combo-text-preset" data-text="© Copyright">©
-                    Copyright</button>
-                  <button type="button" class="btn-adder-text-preset btn-combo-text-preset"
-                    data-text="Sample Video">Sample Video</button>
-                  <button type="button" class="btn-adder-text-preset btn-combo-text-preset"
-                    data-text="Confidential">Confidential</button>
-                  <button type="button" class="btn-adder-text-preset btn-combo-text-preset"
-                    data-text="@username">@username</button>
-                </div>
 
                 <div class="adder-row-split mt-3">
+                  <div class="adder-col">
+                    <label class="adder-field-label" for="combo-text-input">Watermark Text:</label>
+                    <input type="text" id="combo-text-input" class="adder-text-field" value="AXWON GROUP"
+                      placeholder="Enter watermark text..." />
+                  </div>
                   <div class="adder-col">
                     <div class="font-label-row">
                       <label class="adder-field-label" for="combo-font-family">Font Family:</label>
@@ -1914,8 +1893,8 @@
 
                 <div class="mt-2">
                   <label class="adder-checkbox-label">
-                    <input type="checkbox" id="combo-text-outline" checked />
-                    <span>High-contrast dark outline / shadow</span>
+                    <input type="checkbox" id="combo-text-outline" />
+                    <span>Outline / shadow</span>
                   </label>
                 </div>
               </div>
@@ -1935,8 +1914,10 @@
                 </div>
               </div>
 
+
               <!-- Placement Corner Anchors -->
-              <div class="tuner-preset-row mt-3">
+
+              <div class="adder-config-card mt-3">
                 <span class="tuner-preset-label">Placement Corner:</span>
                 <div class="tuner-preset-buttons anchor-grid">
                   <button type="button" class="btn-preset btn-combo-anchor" data-anchor="top-left" title="Top Left">

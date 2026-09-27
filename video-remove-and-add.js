@@ -1214,16 +1214,6 @@ function initVideoRemoveAndAdd() {
     renderPreview();
   });
 
-  document.querySelectorAll('#panel-remove-add .btn-combo-text-preset').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const txt = btn.getAttribute('data-text');
-      if (txt && textInput) {
-        textInput.value = txt;
-        adderConfig.text = txt;
-        renderPreview();
-      }
-    });
-  });
 
   selectFontFamily?.addEventListener('change', async (e) => {
     const val = e.target.value;

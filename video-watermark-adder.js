@@ -776,7 +776,6 @@ function initVideoWatermarkAdder() {
   const btnLoadCustomFont = document.getElementById('btn-load-custom-font');
   const fontStatusMsg = document.getElementById('adder-font-status');
   const outlineCheckbox = document.getElementById('adder-text-outline');
-  const textPresetButtons = document.querySelectorAll('.btn-adder-text-preset');
   const colorPresetButtons = document.querySelectorAll('.color-preset-pill');
 
   // Image logo inputs
@@ -948,17 +947,6 @@ function initVideoWatermarkAdder() {
   textInput?.addEventListener('input', (e) => {
     config.text = e.target.value;
     renderPreview();
-  });
-
-  textPresetButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const val = btn.getAttribute('data-text');
-      if (val) {
-        config.text = val;
-        if (textInput) textInput.value = val;
-        renderPreview();
-      }
-    });
   });
 
   textColorInput?.addEventListener('input', (e) => {

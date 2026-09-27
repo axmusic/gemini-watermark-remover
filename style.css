@@ -3029,29 +3029,6 @@ body {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-.adder-presets-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.btn-adder-text-preset {
-  font-size: 0.75rem;
-  padding: 0.2rem 0.55rem;
-  background: #f1f5f9;
-  border: 1px solid var(--bg-card-border);
-  border-radius: 9999px;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.btn-adder-text-preset:hover {
-  background: #e0e7ff;
-  color: var(--brand-primary);
-  border-color: #a5b4fc;
-}
 
 .adder-row-split {
   display: grid;
