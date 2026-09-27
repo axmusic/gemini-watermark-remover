@@ -368,6 +368,7 @@ class BulkVideoAdderQueue {
     this.btnStart = document.getElementById('btn-bulk-adder-start');
     this.btnPause = document.getElementById('btn-bulk-adder-pause');
     this.btnDownloadAll = document.getElementById('btn-bulk-adder-download-all');
+    this.btnDownloadZip = document.getElementById('btn-bulk-adder-download-zip');
     this.btnClear = document.getElementById('btn-bulk-adder-clear');
     this.btnAddMore = document.getElementById('btn-bulk-adder-add-more');
 
@@ -410,6 +411,7 @@ class BulkVideoAdderQueue {
     this.btnStart?.addEventListener('click', () => this.start());
     this.btnPause?.addEventListener('click', () => this.pause());
     this.btnDownloadAll?.addEventListener('click', () => this.downloadAll());
+    this.btnDownloadZip?.addEventListener('click', () => this.downloadZip());
     this.btnClear?.addEventListener('click', () => this.clear());
     this.btnAddMore?.addEventListener('click', () => {
       if (this.inputBulk) this.inputBulk.click();
@@ -563,6 +565,17 @@ class BulkVideoAdderQueue {
     });
   }
 
+  async downloadZip() {
+    if (typeof window.exportQueueAsZip === 'function') {
+      await window.exportQueueAsZip({
+        items: this.queue,
+        zipFilename: `watermarked_videos_${new Date().toISOString().slice(0, 10)}.zip`,
+        filePrefix: 'watermarked',
+        btnElement: this.btnDownloadZip,
+      });
+    }
+  }
+
   updateStats() {
     const total = this.queue.length;
     const completed = this.queue.filter(i => i.status === 'completed').length;
@@ -590,6 +603,14 @@ class BulkVideoAdderQueue {
         this.btnDownloadAll.classList.remove('hidden');
       } else {
         this.btnDownloadAll.classList.add('hidden');
+      }
+    }
+
+    if (this.btnDownloadZip) {
+      if (completed > 0) {
+        this.btnDownloadZip.classList.remove('hidden');
+      } else {
+        this.btnDownloadZip.classList.add('hidden');
       }
     }
 

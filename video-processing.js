@@ -562,6 +562,114 @@ function formatBytes(bytes, decimals = 1) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+// ── ZIP Export Utilities ──
+async function ensureJSZip() {
+  if (window.JSZip) return window.JSZip;
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = './assets/jszip.min.js';
+    s.onload = () => resolve(window.JSZip);
+    s.onerror = () => {
+      const cdnScript = document.createElement('script');
+      cdnScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      cdnScript.onload = () => resolve(window.JSZip);
+      cdnScript.onerror = () => reject(new Error('Failed to load ZIP library. Please check your connection.'));
+      document.head.appendChild(cdnScript);
+    };
+    document.head.appendChild(s);
+  });
+}
+
+async function exportQueueAsZip({ items, zipFilename, filePrefix = '', btnElement = null }) {
+  const completedItems = items.filter(i => i.status === 'completed' && (i.result?.blob || i.result?.url));
+  if (!completedItems.length) {
+    alert('No completed files available to download yet.');
+    return;
+  }
+
+  let originalHtml = '';
+  if (btnElement) {
+    originalHtml = btnElement.innerHTML;
+    btnElement.disabled = true;
+    btnElement.innerHTML = `
+      <iconify-icon icon="line-md:loading-loop" width="16"></iconify-icon>
+      <span>Preparing ZIP...</span>
+    `;
+  }
+
+  try {
+    const JSZipClass = await ensureJSZip();
+    if (!JSZipClass) throw new Error('ZIP creation library could not be loaded.');
+    const zip = new JSZipClass();
+    const usedNames = new Set();
+
+    for (const item of completedItems) {
+      let blob = item.result?.blob;
+      if (!blob && item.result?.url) {
+        try {
+          const resp = await fetch(item.result.url);
+          blob = await resp.blob();
+        } catch (e) {
+          console.warn('Could not read blob for item:', item.name, e);
+        }
+      }
+      if (!blob) continue;
+
+      const baseName = item.name.replace(/\.[^/.]+$/, '');
+      const ext = item.result?.ext || 'mp4';
+      let fileName = filePrefix ? `${filePrefix}_${baseName}.${ext}` : `${baseName}.${ext}`;
+      let counter = 1;
+      while (usedNames.has(fileName)) {
+        fileName = filePrefix
+          ? `${filePrefix}_${baseName}_(${counter++}).${ext}`
+          : `${baseName}_(${counter++}).${ext}`;
+      }
+      usedNames.add(fileName);
+
+      zip.file(fileName, blob);
+    }
+
+    if (btnElement) {
+      const span = btnElement.querySelector('span');
+      if (span) span.textContent = 'Packaging ZIP...';
+    }
+
+    const zipBlob = await zip.generateAsync(
+      {
+        type: 'blob',
+        compression: 'STORE',
+      },
+      (metadata) => {
+        if (btnElement) {
+          const span = btnElement.querySelector('span');
+          if (span) span.textContent = `Packaging (${Math.round(metadata.percent)}%)...`;
+        }
+      }
+    );
+
+    const downloadUrl = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = zipFilename || `videos_batch_${Date.now()}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 30000);
+  } catch (err) {
+    console.error('ZIP generation error:', err);
+    alert('Failed to generate ZIP archive: ' + (err.message || err));
+  } finally {
+    if (btnElement) {
+      btnElement.disabled = false;
+      btnElement.innerHTML = originalHtml;
+    }
+  }
+}
+
+window.ensureJSZip = ensureJSZip;
+window.exportQueueAsZip = exportQueueAsZip;
+
 // ── Bulk Video Queue Processor ──
 class BulkVideoQueue {
   constructor(getVideoEngineFn, grabPreviewFrameFn) {
@@ -620,6 +728,7 @@ class BulkVideoQueue {
     this.btnStart = document.getElementById('btn-bulk-start');
     this.btnPause = document.getElementById('btn-bulk-pause');
     this.btnDownloadAll = document.getElementById('btn-bulk-download-all');
+    this.btnDownloadZip = document.getElementById('btn-bulk-download-zip');
     this.btnClear = document.getElementById('btn-bulk-clear');
     this.btnAddMore = document.getElementById('btn-bulk-add-more');
 
@@ -714,6 +823,7 @@ class BulkVideoQueue {
     this.btnStart?.addEventListener('click', () => this.start());
     this.btnPause?.addEventListener('click', () => this.pause());
     this.btnDownloadAll?.addEventListener('click', () => this.downloadAll());
+    this.btnDownloadZip?.addEventListener('click', () => this.downloadZip());
     this.btnClear?.addEventListener('click', () => this.clear());
     this.btnAddMore?.addEventListener('click', () => {
       if (this.inputBulk) this.inputBulk.click();
@@ -994,6 +1104,15 @@ class BulkVideoQueue {
     });
   }
 
+  async downloadZip() {
+    await exportQueueAsZip({
+      items: this.queue,
+      zipFilename: `gemini_cleaned_videos_${new Date().toISOString().slice(0, 10)}.zip`,
+      filePrefix: 'clean',
+      btnElement: this.btnDownloadZip,
+    });
+  }
+
   updateStats() {
     const total = this.queue.length;
     const completed = this.queue.filter(i => i.status === 'completed').length;
@@ -1021,6 +1140,14 @@ class BulkVideoQueue {
         this.btnDownloadAll.classList.remove('hidden');
       } else {
         this.btnDownloadAll.classList.add('hidden');
+      }
+    }
+
+    if (this.btnDownloadZip) {
+      if (completed > 0) {
+        this.btnDownloadZip.classList.remove('hidden');
+      } else {
+        this.btnDownloadZip.classList.add('hidden');
       }
     }
 

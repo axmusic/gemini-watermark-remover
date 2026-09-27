@@ -952,6 +952,10 @@
                   <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
                   <span>Download All Cleaned MP4s</span>
                 </button>
+                <button type="button" id="btn-bulk-download-zip" class="btn btn-zip hidden" title="Download all cleaned videos packaged in a single ZIP file">
+                  <iconify-icon icon="ph:file-zip-bold" width="16"></iconify-icon>
+                  <span>Download as ZIP</span>
+                </button>
               </div>
 
               <div class="bulk-action-right">
@@ -1355,6 +1359,10 @@
                 <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
                 <span>Download All Watermarked MP4s</span>
               </button>
+              <button type="button" id="btn-bulk-adder-download-zip" class="btn btn-zip hidden" title="Download all watermarked videos packaged in a single ZIP file">
+                <iconify-icon icon="ph:file-zip-bold" width="16"></iconify-icon>
+                <span>Download as ZIP</span>
+              </button>
             </div>
 
             <div class="bulk-action-right">
@@ -1731,6 +1739,10 @@
                     <button type="button" id="btn-bulk-combo-download-all" class="btn btn-success hidden">
                       <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
                       <span>Download All Processed MP4s</span>
+                    </button>
+                    <button type="button" id="btn-bulk-combo-download-zip" class="btn btn-zip hidden" title="Download all processed videos packaged in a single ZIP file">
+                      <iconify-icon icon="ph:file-zip-bold" width="16"></iconify-icon>
+                      <span>Download as ZIP</span>
                     </button>
                   </div>
 
@@ -2749,6 +2761,7 @@
     </dialog>
   </main>
 
+  <script src="./assets/jszip.min.js"></script>
   <script src="./image-processing.js"></script>
   <script src="./video-processing.js"></script>
   <script src="./video-watermark-adder.js"></script>

@@ -352,6 +352,7 @@ class BulkVideoRemoveAndAddQueue {
     this.btnStart = document.getElementById('btn-bulk-combo-start');
     this.btnPause = document.getElementById('btn-bulk-combo-pause');
     this.btnDownloadAll = document.getElementById('btn-bulk-combo-download-all');
+    this.btnDownloadZip = document.getElementById('btn-bulk-combo-download-zip');
     this.btnClear = document.getElementById('btn-bulk-combo-clear');
     this.btnAddMore = document.getElementById('btn-bulk-combo-add-more');
 
@@ -394,6 +395,7 @@ class BulkVideoRemoveAndAddQueue {
     this.btnStart?.addEventListener('click', () => this.start());
     this.btnPause?.addEventListener('click', () => this.togglePause());
     this.btnDownloadAll?.addEventListener('click', () => this.downloadAll());
+    this.btnDownloadZip?.addEventListener('click', () => this.downloadZip());
     this.btnClear?.addEventListener('click', () => this.clear());
     this.btnAddMore?.addEventListener('click', () => {
       if (this.inputBulk) this.inputBulk.click();
@@ -575,6 +577,17 @@ class BulkVideoRemoveAndAddQueue {
     });
   }
 
+  async downloadZip() {
+    if (typeof window.exportQueueAsZip === 'function') {
+      await window.exportQueueAsZip({
+        items: this.queue,
+        zipFilename: `cleaned_watermarked_videos_${new Date().toISOString().slice(0, 10)}.zip`,
+        filePrefix: 'cleaned_watermarked',
+        btnElement: this.btnDownloadZip,
+      });
+    }
+  }
+
   clear() {
     if (this.isProcessing && !confirm('Processing is running. Are you sure you want to cancel and clear the queue?')) {
       return;
@@ -629,6 +642,14 @@ class BulkVideoRemoveAndAddQueue {
         this.btnDownloadAll.classList.remove('hidden');
       } else {
         this.btnDownloadAll.classList.add('hidden');
+      }
+    }
+
+    if (this.btnDownloadZip) {
+      if (completed > 0) {
+        this.btnDownloadZip.classList.remove('hidden');
+      } else {
+        this.btnDownloadZip.classList.add('hidden');
       }
     }
 
