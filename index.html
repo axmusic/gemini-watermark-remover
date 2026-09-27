@@ -271,6 +271,7 @@
       <!-- Desktop Navigation Menu -->
       <nav class="nav-menu" aria-label="Main Navigation">
         <a href="#panel-video" class="nav-link" id="nav-link-video">Video Remover</a>
+        <a href="#panel-add-watermark" class="nav-link" id="nav-link-add-watermark">Add Watermark</a>
         <a href="#how-it-works" class="nav-link">How it Works</a>
         <a href="#guide" class="nav-link">Settings vs Tool</a>
         <a href="#comparison" class="nav-link">Comparison</a>
@@ -317,6 +318,10 @@
           <a href="#panel-video" class="mobile-nav-link" id="mobile-nav-link-video">
             <iconify-icon icon="ph:video-bold" width="18"></iconify-icon>
             <span>Video Remover</span>
+          </a>
+          <a href="#panel-add-watermark" class="mobile-nav-link" id="mobile-nav-link-add-watermark">
+            <iconify-icon icon="ph:stamp-bold" width="18"></iconify-icon>
+            <span>Add Watermark</span>
           </a>
           <a href="#models-showcase" class="mobile-nav-link">
             <iconify-icon icon="ph:cpu-bold" width="18"></iconify-icon>
@@ -413,6 +418,10 @@
         <iconify-icon icon="ph:video-bold" width="18"></iconify-icon>
         <span>Video Remover</span>
       </button>
+      <button id="tab-add-watermark" class="tab-btn">
+        <iconify-icon icon="ph:stamp-bold" width="18"></iconify-icon>
+        <span>Add Watermark</span>
+      </button>
     </div>
 
     <!-- Image Removal Panel -->
@@ -480,28 +489,60 @@
               <span>Strength (Gain)</span>
               <span id="lbl-img-gain">0.60x</span>
             </div>
-            <input type="range" id="slider-img-gain" min="0.1" max="3" step="0.05" value="0.6" />
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-img-gain" data-dir="-1" title="Decrease Gain" aria-label="Decrease Gain">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-img-gain" min="0.1" max="3" step="0.05" value="0.6" />
+              <button type="button" class="btn-slider-step" data-target="slider-img-gain" data-dir="1" title="Increase Gain" aria-label="Increase Gain">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
           </div>
           <div class="slider-group">
             <div class="tuner-slider-label">
               <span>Size Scale</span>
               <span id="lbl-img-scale">1.00x</span>
             </div>
-            <input type="range" id="slider-img-scale" min="0.5" max="2" step="0.05" value="1.0" />
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-img-scale" data-dir="-1" title="Decrease Size Scale" aria-label="Decrease Size Scale">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-img-scale" min="0.5" max="2" step="0.05" value="1.0" />
+              <button type="button" class="btn-slider-step" data-target="slider-img-scale" data-dir="1" title="Increase Size Scale" aria-label="Increase Size Scale">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
           </div>
           <div class="slider-group">
             <div class="tuner-slider-label">
               <span>Position X</span>
               <span id="lbl-img-offset-x">-128px</span>
             </div>
-            <input type="range" id="slider-img-offset-x" min="-250" max="150" step="1" value="-128" />
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-img-offset-x" data-dir="-1" title="Decrease Position X" aria-label="Decrease Position X">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-img-offset-x" min="-250" max="150" step="1" value="-128" />
+              <button type="button" class="btn-slider-step" data-target="slider-img-offset-x" data-dir="1" title="Increase Position X" aria-label="Increase Position X">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
           </div>
           <div class="slider-group">
             <div class="tuner-slider-label">
               <span>Position Y</span>
               <span id="lbl-img-offset-y">-128px</span>
             </div>
-            <input type="range" id="slider-img-offset-y" min="-250" max="150" step="1" value="-128" />
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-img-offset-y" data-dir="-1" title="Decrease Position Y" aria-label="Decrease Position Y">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-img-offset-y" min="-250" max="150" step="1" value="-128" />
+              <button type="button" class="btn-slider-step" data-target="slider-img-offset-y" data-dir="1" title="Increase Position Y" aria-label="Increase Position Y">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -601,28 +642,60 @@
                 <span>Strength (Gain)</span>
                 <span id="lbl-video-gain">0.60x</span>
               </div>
-              <input type="range" id="slider-video-gain" min="0.1" max="3" step="0.05" value="0.6" />
+              <div class="slider-control-row">
+                <button type="button" class="btn-slider-step" data-target="slider-video-gain" data-dir="-1" title="Decrease Gain" aria-label="Decrease Gain">
+                  <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                </button>
+                <input type="range" id="slider-video-gain" min="0.1" max="3" step="0.05" value="0.6" />
+                <button type="button" class="btn-slider-step" data-target="slider-video-gain" data-dir="1" title="Increase Gain" aria-label="Increase Gain">
+                  <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                </button>
+              </div>
             </div>
             <div class="slider-group">
               <div class="tuner-slider-label">
                 <span>Size Scale</span>
                 <span id="lbl-video-scale">1.00x</span>
               </div>
-              <input type="range" id="slider-video-scale" min="0.5" max="2" step="0.05" value="1.0" />
+              <div class="slider-control-row">
+                <button type="button" class="btn-slider-step" data-target="slider-video-scale" data-dir="-1" title="Decrease Size Scale" aria-label="Decrease Size Scale">
+                  <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                </button>
+                <input type="range" id="slider-video-scale" min="0.5" max="2" step="0.05" value="1.0" />
+                <button type="button" class="btn-slider-step" data-target="slider-video-scale" data-dir="1" title="Increase Size Scale" aria-label="Increase Size Scale">
+                  <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                </button>
+              </div>
             </div>
             <div class="slider-group">
               <div class="tuner-slider-label">
                 <span>Position X</span>
                 <span id="lbl-video-offset-x">-24px</span>
               </div>
-              <input type="range" id="slider-video-offset-x" min="-150" max="150" step="1" value="-24" />
+              <div class="slider-control-row">
+                <button type="button" class="btn-slider-step" data-target="slider-video-offset-x" data-dir="-1" title="Decrease Position X" aria-label="Decrease Position X">
+                  <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                </button>
+                <input type="range" id="slider-video-offset-x" min="-150" max="150" step="1" value="-24" />
+                <button type="button" class="btn-slider-step" data-target="slider-video-offset-x" data-dir="1" title="Increase Position X" aria-label="Increase Position X">
+                  <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                </button>
+              </div>
             </div>
             <div class="slider-group">
               <div class="tuner-slider-label">
                 <span>Position Y</span>
                 <span id="lbl-video-offset-y">-24px</span>
               </div>
-              <input type="range" id="slider-video-offset-y" min="-150" max="150" step="1" value="-24" />
+              <div class="slider-control-row">
+                <button type="button" class="btn-slider-step" data-target="slider-video-offset-y" data-dir="-1" title="Decrease Position Y" aria-label="Decrease Position Y">
+                  <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                </button>
+                <input type="range" id="slider-video-offset-y" min="-150" max="150" step="1" value="-24" />
+                <button type="button" class="btn-slider-step" data-target="slider-video-offset-y" data-dir="1" title="Increase Position Y" aria-label="Increase Position Y">
+                  <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -726,6 +799,397 @@
           <!-- Queue Items List -->
           <div id="bulk-queue-list" class="bulk-queue-list mt-4"></div>
         </div>
+      </div>
+    </section>
+
+    <!-- Video Watermark Adder Panel -->
+    <section id="panel-add-watermark" class="card hidden">
+      <!-- Adder Mode Switcher (Single Video vs Bulk Processing) -->
+      <div class="video-mode-switcher">
+        <button type="button" class="btn-mode active" id="btn-adder-mode-single" data-mode="single">
+          <iconify-icon icon="ph:video-bold" width="18"></iconify-icon>
+          <span>Single Video + Tuner</span>
+        </button>
+        <button type="button" class="btn-mode" id="btn-adder-mode-bulk" data-mode="bulk">
+          <iconify-icon icon="ph:files-bold" width="18"></iconify-icon>
+          <span>Bulk Video Watermark</span>
+          <span class="mode-badge-new">NEW BATCH</span>
+        </button>
+      </div>
+
+      <!-- SINGLE ADDER CONTAINER -->
+      <div id="adder-single-container">
+        <div id="adder-video-dropzone" class="dropzone">
+          <div class="dropzone-icon">
+            <iconify-icon icon="ph:video-camera-bold"></iconify-icon>
+          </div>
+          <p class="dropzone-title">Upload or drag a video to add custom watermark</p>
+          <p class="dropzone-sub">Supports MP4, WebM, MOV with full audio preservation (Drop multiple files for Bulk Mode)</p>
+          <input id="adder-video-input" type="file" accept="video/*" class="hidden" />
+        </div>
+      </div>
+
+      <!-- BULK ADDER CONTAINER -->
+      <div id="adder-bulk-container" class="hidden">
+        <div id="bulk-adder-dropzone" class="dropzone bulk-dropzone">
+          <div class="dropzone-icon">
+            <iconify-icon icon="ph:files-bold" width="36"></iconify-icon>
+          </div>
+          <p class="dropzone-title">Upload or drag multiple videos to add watermark in batch</p>
+          <p class="dropzone-sub">Select 2 or more MP4, WebM, or MOV files to watermark together</p>
+          <input id="bulk-adder-input" type="file" accept="video/*" multiple class="hidden" />
+        </div>
+      </div>
+
+      <!-- Watermark Adder Tuner & Live Preview Container -->
+      <div id="adder-tuner-container" class="tuner-container hidden">
+        <!-- Live Preview Row -->
+        <div class="tuner-preview-row">
+          <div class="tuner-canvas-box main-box" style="width: 100%;">
+            <div class="canvas-title-row">
+              <span class="canvas-title">
+                <iconify-icon icon="ph:frame-corners" width="14"></iconify-icon>
+                Live Watermark Preview
+              </span>
+              <span class="canvas-subtitle text-xs text-muted">
+                Frame Time: <strong id="lbl-adder-frame-time" class="text-indigo-600">0.0s</strong>
+              </span>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="adder-main-canvas"></canvas>
+            </div>
+            <!-- Frame Scrubber -->
+            <div class="frame-scrubber-row mt-2">
+              <label for="slider-adder-frame-time" class="text-xs text-muted">
+                <iconify-icon icon="ph:film-strip-bold" width="14"></iconify-icon>
+                <span>Scrub Video Frame:</span>
+              </label>
+              <input type="range" id="slider-adder-frame-time" min="0" max="10" step="0.1" value="0" class="mini-scrubber" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Watermark Mode Switcher (Text vs Image/Logo) -->
+        <div class="tuner-preset-row mt-3">
+          <span class="tuner-preset-label">Watermark Type:</span>
+          <div class="tuner-preset-buttons">
+            <button type="button" class="btn-preset active" id="btn-adder-type-text">
+              <iconify-icon icon="ph:text-t-bold"></iconify-icon> Text Watermark
+            </button>
+            <button type="button" class="btn-preset" id="btn-adder-type-image">
+              <iconify-icon icon="ph:image-bold"></iconify-icon> Image / Logo
+            </button>
+          </div>
+        </div>
+
+        <!-- Text Watermark Controls -->
+        <div id="adder-text-controls" class="adder-config-card mt-3">
+          <div class="adder-field-group">
+            <label class="adder-field-label" for="adder-text-input">Watermark Text:</label>
+            <input type="text" id="adder-text-input" class="adder-text-field" value="© My Brand" placeholder="Enter watermark text..." />
+          </div>
+
+          <!-- Quick Text Presets -->
+          <div class="adder-presets-row mt-2">
+            <span class="text-xs text-muted">Quick Text:</span>
+            <button type="button" class="btn-adder-text-preset" data-text="© Copyright">© Copyright</button>
+            <button type="button" class="btn-adder-text-preset" data-text="Sample Video">Sample Video</button>
+            <button type="button" class="btn-adder-text-preset" data-text="Confidential">Confidential</button>
+            <button type="button" class="btn-adder-text-preset" data-text="@username">@username</button>
+          </div>
+
+          <div class="adder-row-split mt-3">
+            <div class="adder-col">
+              <div class="font-label-row">
+                <label class="adder-field-label" for="adder-font-family">Font Family:</label>
+                <span class="text-xs text-indigo-600 font-medium">Google Fonts Enabled</span>
+              </div>
+              <select id="adder-font-family" class="adder-select">
+                <optgroup label="Popular Google Fonts">
+                  <option value="Ubuntu, sans-serif" selected>Ubuntu (Modern)</option>
+                  <option value="Montserrat, sans-serif">Montserrat (Geometric)</option>
+                  <option value="Poppins, sans-serif">Poppins (Clean)</option>
+                  <option value="Bebas Neue, sans-serif">Bebas Neue (Headline)</option>
+                  <option value="Oswald, sans-serif">Oswald (Condensed)</option>
+                  <option value="Anton, sans-serif">Anton (Impactful)</option>
+                  <option value="Inter, sans-serif">Inter (Minimal)</option>
+                  <option value="Playfair Display, serif">Playfair Display (Luxury Serif)</option>
+                  <option value="Pacifico, cursive">Pacifico (Handwritten)</option>
+                  <option value="Lobster, cursive">Lobster (Script)</option>
+                  <option value="Russo One, sans-serif">Russo One (Cyber / Bold)</option>
+                  <option value="Cinzel, serif">Cinzel (Cinematic)</option>
+                  <option value="JetBrains Mono, monospace">JetBrains Mono (Tech)</option>
+                </optgroup>
+                <optgroup label="Web Safe Fonts">
+                  <option value="Arial, sans-serif">Arial</option>
+                  <option value="Impact, fantasy">Impact</option>
+                  <option value="Georgia, serif">Georgia</option>
+                  <option value="Courier New, monospace">Courier New</option>
+                  <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
+                </optgroup>
+                <optgroup label="Custom Google Font">
+                  <option value="custom">+ Paste Google Font Link / Name...</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="adder-col">
+              <label class="adder-field-label" for="adder-font-weight">Font Weight:</label>
+              <select id="adder-font-weight" class="adder-select">
+                <option value="300">300 (Light)</option>
+                <option value="400">400 (Regular)</option>
+                <option value="500">500 (Medium)</option>
+                <option value="600">600 (Semi-Bold)</option>
+                <option value="700" selected>700 (Bold)</option>
+                <option value="800">800 (Extra Bold)</option>
+                <option value="900">900 (Black / Heavy)</option>
+              </select>
+            </div>
+
+            <div class="adder-col">
+              <label class="adder-field-label">Color &amp; Presets:</label>
+              <div class="color-picker-row">
+                <input type="color" id="adder-text-color" value="#ffffff" class="color-picker-input" title="Choose Custom Color" />
+                <button type="button" class="color-preset-pill" data-color="#ffffff" style="background:#ffffff;" title="White"></button>
+                <button type="button" class="color-preset-pill" data-color="#000000" style="background:#000000;" title="Black"></button>
+                <button type="button" class="color-preset-pill" data-color="#fbbf24" style="background:#fbbf24;" title="Gold"></button>
+                <button type="button" class="color-preset-pill" data-color="#ef4444" style="background:#ef4444;" title="Red"></button>
+                <button type="button" class="color-preset-pill" data-color="#6366f1" style="background:#6366f1;" title="Indigo"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Google Font Link / Name Input Box -->
+          <div id="adder-custom-font-box" class="adder-custom-font-box mt-3">
+            <label class="adder-field-label mb-1" for="adder-custom-font-input">
+              <iconify-icon icon="ph:google-logo-bold" class="text-indigo-600" width="14"></iconify-icon>
+              <span>Load any Google Font (Enter Link or Font Name):</span>
+            </label>
+            <div class="custom-font-input-wrapper">
+              <input type="text" id="adder-custom-font-input" class="adder-custom-font-field"
+                placeholder="e.g. Dancing Script, Press Start 2P, or https://fonts.googleapis.com/css2?family=..." />
+              <button type="button" id="btn-load-custom-font" class="btn btn-secondary btn-xs">
+                <iconify-icon icon="ph:download-simple-bold" width="14"></iconify-icon>
+                <span>Load Font</span>
+              </button>
+            </div>
+            <div id="adder-font-status" class="adder-font-status-msg hidden"></div>
+          </div>
+
+          <div class="mt-2">
+            <label class="adder-checkbox-label">
+              <input type="checkbox" id="adder-text-outline" checked />
+              <span>High-contrast dark outline / shadow (for clear visibility on all scenes)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Image Watermark Controls (Logo Upload) -->
+        <div id="adder-image-controls" class="adder-config-card mt-3 hidden">
+          <div class="adder-logo-upload-box">
+            <div id="adder-logo-dropzone" class="adder-mini-dropzone">
+              <img id="adder-logo-thumb" class="adder-logo-thumb hidden" alt="Uploaded watermark logo thumbnail" />
+              <div class="adder-logo-prompt">
+                <iconify-icon icon="ph:upload-simple-bold" width="20"></iconify-icon>
+                <span>Click to Upload Watermark Logo (PNG, WebP, JPG, SVG)</span>
+              </div>
+              <input type="file" id="adder-logo-input" accept="image/*" class="hidden" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Placement Anchor Presets -->
+        <div class="tuner-preset-row mt-3">
+          <span class="tuner-preset-label">Placement Corner:</span>
+          <div class="tuner-preset-buttons anchor-grid">
+            <button type="button" class="btn-preset btn-adder-anchor" data-anchor="top-left" title="Top Left">
+              <iconify-icon icon="ph:arrow-up-left-bold"></iconify-icon> Top Left
+            </button>
+            <button type="button" class="btn-preset btn-adder-anchor" data-anchor="top-right" title="Top Right">
+              <iconify-icon icon="ph:arrow-up-right-bold"></iconify-icon> Top Right
+            </button>
+            <button type="button" class="btn-preset btn-adder-anchor" data-anchor="center" title="Center">
+              <iconify-icon icon="ph:arrows-out-cardinal-bold"></iconify-icon> Center
+            </button>
+            <button type="button" class="btn-preset btn-adder-anchor" data-anchor="bottom-left" title="Bottom Left">
+              <iconify-icon icon="ph:arrow-down-left-bold"></iconify-icon> Bottom Left
+            </button>
+            <button type="button" class="btn-preset btn-adder-anchor active" data-anchor="bottom-right" title="Bottom Right">
+              <iconify-icon icon="ph:arrow-down-right-bold"></iconify-icon> Bottom Right
+            </button>
+          </div>
+        </div>
+
+        <!-- Tuner Sliders with - / + buttons -->
+        <div class="tuner-sliders mt-2">
+          <div class="slider-group">
+            <div class="tuner-slider-label">
+              <span>Size / Scale</span>
+              <span id="lbl-adder-size">42px</span>
+            </div>
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-size" data-dir="-1" title="Decrease Size" aria-label="Decrease Size">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-adder-size" min="12" max="140" step="2" value="42" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-size" data-dir="1" title="Increase Size" aria-label="Increase Size">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="tuner-slider-label">
+              <span>Opacity</span>
+              <span id="lbl-adder-opacity">85%</span>
+            </div>
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-opacity" data-dir="-1" title="Decrease Opacity" aria-label="Decrease Opacity">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-adder-opacity" min="0.05" max="1.0" step="0.05" value="0.85" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-opacity" data-dir="1" title="Increase Opacity" aria-label="Increase Opacity">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="tuner-slider-label">
+              <span>Position Offset X</span>
+              <span id="lbl-adder-offset-x">0px</span>
+            </div>
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-x" data-dir="-1" title="Shift Left" aria-label="Shift Left">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-adder-offset-x" min="-400" max="400" step="2" value="0" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-x" data-dir="1" title="Shift Right" aria-label="Shift Right">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="tuner-slider-label">
+              <span>Position Offset Y</span>
+              <span id="lbl-adder-offset-y">0px</span>
+            </div>
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-y" data-dir="-1" title="Shift Up" aria-label="Shift Up">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-adder-offset-y" min="-400" max="400" step="2" value="0" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-y" data-dir="1" title="Shift Down" aria-label="Shift Down">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="tuner-slider-label">
+              <span>Rotation Angle</span>
+              <span id="lbl-adder-rotation">0°</span>
+            </div>
+            <div class="slider-control-row">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-rotation" data-dir="-1" title="Rotate Counter-Clockwise" aria-label="Rotate Counter-Clockwise">
+                <iconify-icon icon="ph:minus-bold"></iconify-icon>
+              </button>
+              <input type="range" id="slider-adder-rotation" min="-180" max="180" step="1" value="0" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-rotation" data-dir="1" title="Rotate Clockwise" aria-label="Rotate Clockwise">
+                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tuner-actions mt-3">
+          <button id="btn-adder-reset" class="btn btn-secondary text-xs">
+            <iconify-icon icon="ph:arrow-counter-clockwise"></iconify-icon> Reset Settings
+          </button>
+          <button id="btn-adder-export" class="btn btn-primary">
+            <iconify-icon icon="ph:stamp-bold"></iconify-icon> Add Watermark &amp; Export Video MP4
+          </button>
+        </div>
+      </div>
+
+      <!-- Processing Progress (Single Mode) -->
+      <div id="adder-status" class="hidden mt-4 text-center">
+        <p class="mb-2">Adding Watermark &amp; Encoding Video...</p>
+        <div class="progress-bar-container">
+          <div id="adder-progress-bar" class="progress-bar-fill"></div>
+        </div>
+        <p id="adder-progress-text" class="progress-text">0%</p>
+      </div>
+
+      <div id="adder-results" class="hidden mt-4"></div>
+
+      <!-- Bulk Adder Queue Section -->
+      <div id="bulk-adder-queue-wrapper" class="bulk-queue-wrapper hidden mt-4">
+        <div class="bulk-header-card">
+          <!-- Global Stats Overview -->
+          <div class="bulk-stats-row">
+            <div class="bulk-stat-pill">
+              <span class="stat-label">Total Videos</span>
+              <strong id="bulk-adder-count-total">0</strong>
+            </div>
+            <div class="bulk-stat-pill completed">
+              <span class="stat-label">Completed</span>
+              <strong id="bulk-adder-count-completed">0</strong>
+            </div>
+            <div class="bulk-stat-pill processing">
+              <span class="stat-label">Processing</span>
+              <strong id="bulk-adder-count-processing">0</strong>
+            </div>
+            <div class="bulk-stat-pill queued">
+              <span class="stat-label">Queued</span>
+              <strong id="bulk-adder-count-queued">0</strong>
+            </div>
+          </div>
+
+          <!-- Global Overall Batch Progress Bar -->
+          <div id="bulk-adder-overall-progress-container" class="bulk-overall-progress hidden mt-3">
+            <div class="progress-bar-header">
+              <span id="bulk-adder-overall-status-text">Batch Processing Active...</span>
+              <span id="bulk-adder-overall-percent-text">0%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div id="bulk-adder-overall-progress-bar" class="progress-bar-fill" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Action Controls Bar -->
+          <div class="bulk-action-bar mt-4">
+            <div class="bulk-action-left">
+              <button type="button" id="btn-bulk-adder-start" class="btn btn-primary">
+                <iconify-icon icon="ph:play-fill" width="16"></iconify-icon>
+                <span>Start Bulk Watermarking</span>
+              </button>
+              <button type="button" id="btn-bulk-adder-pause" class="btn btn-secondary hidden">
+                <iconify-icon icon="ph:pause-fill" width="16"></iconify-icon>
+                <span>Pause Processing</span>
+              </button>
+              <button type="button" id="btn-bulk-adder-download-all" class="btn btn-success hidden">
+                <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
+                <span>Download All Watermarked MP4s</span>
+              </button>
+            </div>
+
+            <div class="bulk-action-right">
+              <button type="button" id="btn-bulk-adder-add-more" class="btn btn-secondary text-xs">
+                <iconify-icon icon="ph:plus-bold" width="14"></iconify-icon>
+                <span>Add More Videos</span>
+              </button>
+              <button type="button" id="btn-bulk-adder-clear" class="btn btn-secondary text-xs text-danger">
+                <iconify-icon icon="ph:trash-bold" width="14"></iconify-icon>
+                <span>Clear Queue</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Queue Items List -->
+        <div id="bulk-adder-queue-list" class="bulk-queue-list mt-4"></div>
       </div>
     </section>
 
@@ -1439,7 +1903,10 @@
     </dialog>
   </main>
 
-  <script src="./main.js"></script>
+  <script src="./image-processing.js"></script>
+  <script src="./video-processing.js"></script>
+  <script src="./video-watermark-adder.js"></script>
+  <script src="./ui.js"></script>
   <!-- BuyMeACoffee Widget (Lazy Loaded for Optimal Core Web Vitals) -->
   <script>
     (function () {
