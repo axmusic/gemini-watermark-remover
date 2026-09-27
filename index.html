@@ -272,6 +272,7 @@
       <nav class="nav-menu" aria-label="Main Navigation">
         <a href="#panel-video" class="nav-link" id="nav-link-video">Video Remover</a>
         <a href="#panel-add-watermark" class="nav-link" id="nav-link-add-watermark">Add Watermark</a>
+        <a href="#panel-remove-add" class="nav-link" id="nav-link-remove-add">Remove &amp; Add</a>
         <a href="#how-it-works" class="nav-link">How it Works</a>
         <a href="#guide" class="nav-link">Settings vs Tool</a>
         <a href="#comparison" class="nav-link">Comparison</a>
@@ -322,6 +323,10 @@
           <a href="#panel-add-watermark" class="mobile-nav-link" id="mobile-nav-link-add-watermark">
             <iconify-icon icon="ph:stamp-bold" width="18"></iconify-icon>
             <span>Add Watermark</span>
+          </a>
+          <a href="#panel-remove-add" class="mobile-nav-link" id="mobile-nav-link-remove-add">
+            <iconify-icon icon="ph:magic-wand-bold" width="18"></iconify-icon>
+            <span>Remove &amp; Add</span>
           </a>
           <a href="#models-showcase" class="mobile-nav-link">
             <iconify-icon icon="ph:cpu-bold" width="18"></iconify-icon>
@@ -422,6 +427,10 @@
         <iconify-icon icon="ph:stamp-bold" width="18"></iconify-icon>
         <span>Add Watermark</span>
       </button>
+      <button id="tab-remove-add" class="tab-btn">
+        <iconify-icon icon="ph:magic-wand-bold" width="18"></iconify-icon>
+        <span>Remove &amp; Add</span>
+      </button>
     </div>
 
     <!-- Image Removal Panel -->
@@ -490,11 +499,13 @@
               <span id="lbl-img-gain">0.60x</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-img-gain" data-dir="-1" title="Decrease Gain" aria-label="Decrease Gain">
+              <button type="button" class="btn-slider-step" data-target="slider-img-gain" data-dir="-1"
+                title="Decrease Gain" aria-label="Decrease Gain">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
-              <input type="range" id="slider-img-gain" min="0.1" max="3" step="0.05" value="0.6" />
-              <button type="button" class="btn-slider-step" data-target="slider-img-gain" data-dir="1" title="Increase Gain" aria-label="Increase Gain">
+              <input type="range" id="slider-img-gain" min="0.1" max="3" step="0.01" value="0.6" />
+              <button type="button" class="btn-slider-step" data-target="slider-img-gain" data-dir="1"
+                title="Increase Gain" aria-label="Increase Gain">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -505,11 +516,13 @@
               <span id="lbl-img-scale">1.00x</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-img-scale" data-dir="-1" title="Decrease Size Scale" aria-label="Decrease Size Scale">
+              <button type="button" class="btn-slider-step" data-target="slider-img-scale" data-dir="-1"
+                title="Decrease Size Scale" aria-label="Decrease Size Scale">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
-              <input type="range" id="slider-img-scale" min="0.5" max="2" step="0.05" value="1.0" />
-              <button type="button" class="btn-slider-step" data-target="slider-img-scale" data-dir="1" title="Increase Size Scale" aria-label="Increase Size Scale">
+              <input type="range" id="slider-img-scale" min="0.5" max="2" step="0.01" value="1.0" />
+              <button type="button" class="btn-slider-step" data-target="slider-img-scale" data-dir="1"
+                title="Increase Size Scale" aria-label="Increase Size Scale">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -520,11 +533,13 @@
               <span id="lbl-img-offset-x">-128px</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-img-offset-x" data-dir="-1" title="Decrease Position X" aria-label="Decrease Position X">
+              <button type="button" class="btn-slider-step" data-target="slider-img-offset-x" data-dir="-1"
+                title="Decrease Position X" aria-label="Decrease Position X">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
               <input type="range" id="slider-img-offset-x" min="-250" max="150" step="1" value="-128" />
-              <button type="button" class="btn-slider-step" data-target="slider-img-offset-x" data-dir="1" title="Increase Position X" aria-label="Increase Position X">
+              <button type="button" class="btn-slider-step" data-target="slider-img-offset-x" data-dir="1"
+                title="Increase Position X" aria-label="Increase Position X">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -535,11 +550,13 @@
               <span id="lbl-img-offset-y">-128px</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-img-offset-y" data-dir="-1" title="Decrease Position Y" aria-label="Decrease Position Y">
+              <button type="button" class="btn-slider-step" data-target="slider-img-offset-y" data-dir="-1"
+                title="Decrease Position Y" aria-label="Decrease Position Y">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
               <input type="range" id="slider-img-offset-y" min="-250" max="150" step="1" value="-128" />
-              <button type="button" class="btn-slider-step" data-target="slider-img-offset-y" data-dir="1" title="Increase Position Y" aria-label="Increase Position Y">
+              <button type="button" class="btn-slider-step" data-target="slider-img-offset-y" data-dir="1"
+                title="Increase Position Y" aria-label="Increase Position Y">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -643,11 +660,13 @@
                 <span id="lbl-video-gain">0.60x</span>
               </div>
               <div class="slider-control-row">
-                <button type="button" class="btn-slider-step" data-target="slider-video-gain" data-dir="-1" title="Decrease Gain" aria-label="Decrease Gain">
+                <button type="button" class="btn-slider-step" data-target="slider-video-gain" data-dir="-1"
+                  title="Decrease Gain" aria-label="Decrease Gain">
                   <iconify-icon icon="ph:minus-bold"></iconify-icon>
                 </button>
-                <input type="range" id="slider-video-gain" min="0.1" max="3" step="0.05" value="0.6" />
-                <button type="button" class="btn-slider-step" data-target="slider-video-gain" data-dir="1" title="Increase Gain" aria-label="Increase Gain">
+                <input type="range" id="slider-video-gain" min="0.1" max="3" step="0.01" value="0.6" />
+                <button type="button" class="btn-slider-step" data-target="slider-video-gain" data-dir="1"
+                  title="Increase Gain" aria-label="Increase Gain">
                   <iconify-icon icon="ph:plus-bold"></iconify-icon>
                 </button>
               </div>
@@ -658,11 +677,13 @@
                 <span id="lbl-video-scale">1.00x</span>
               </div>
               <div class="slider-control-row">
-                <button type="button" class="btn-slider-step" data-target="slider-video-scale" data-dir="-1" title="Decrease Size Scale" aria-label="Decrease Size Scale">
+                <button type="button" class="btn-slider-step" data-target="slider-video-scale" data-dir="-1"
+                  title="Decrease Size Scale" aria-label="Decrease Size Scale">
                   <iconify-icon icon="ph:minus-bold"></iconify-icon>
                 </button>
-                <input type="range" id="slider-video-scale" min="0.5" max="2" step="0.05" value="1.0" />
-                <button type="button" class="btn-slider-step" data-target="slider-video-scale" data-dir="1" title="Increase Size Scale" aria-label="Increase Size Scale">
+                <input type="range" id="slider-video-scale" min="0.5" max="2" step="0.01" value="1.0" />
+                <button type="button" class="btn-slider-step" data-target="slider-video-scale" data-dir="1"
+                  title="Increase Size Scale" aria-label="Increase Size Scale">
                   <iconify-icon icon="ph:plus-bold"></iconify-icon>
                 </button>
               </div>
@@ -673,11 +694,13 @@
                 <span id="lbl-video-offset-x">-24px</span>
               </div>
               <div class="slider-control-row">
-                <button type="button" class="btn-slider-step" data-target="slider-video-offset-x" data-dir="-1" title="Decrease Position X" aria-label="Decrease Position X">
+                <button type="button" class="btn-slider-step" data-target="slider-video-offset-x" data-dir="-1"
+                  title="Decrease Position X" aria-label="Decrease Position X">
                   <iconify-icon icon="ph:minus-bold"></iconify-icon>
                 </button>
                 <input type="range" id="slider-video-offset-x" min="-150" max="150" step="1" value="-24" />
-                <button type="button" class="btn-slider-step" data-target="slider-video-offset-x" data-dir="1" title="Increase Position X" aria-label="Increase Position X">
+                <button type="button" class="btn-slider-step" data-target="slider-video-offset-x" data-dir="1"
+                  title="Increase Position X" aria-label="Increase Position X">
                   <iconify-icon icon="ph:plus-bold"></iconify-icon>
                 </button>
               </div>
@@ -688,11 +711,13 @@
                 <span id="lbl-video-offset-y">-24px</span>
               </div>
               <div class="slider-control-row">
-                <button type="button" class="btn-slider-step" data-target="slider-video-offset-y" data-dir="-1" title="Decrease Position Y" aria-label="Decrease Position Y">
+                <button type="button" class="btn-slider-step" data-target="slider-video-offset-y" data-dir="-1"
+                  title="Decrease Position Y" aria-label="Decrease Position Y">
                   <iconify-icon icon="ph:minus-bold"></iconify-icon>
                 </button>
                 <input type="range" id="slider-video-offset-y" min="-150" max="150" step="1" value="-24" />
-                <button type="button" class="btn-slider-step" data-target="slider-video-offset-y" data-dir="1" title="Increase Position Y" aria-label="Increase Position Y">
+                <button type="button" class="btn-slider-step" data-target="slider-video-offset-y" data-dir="1"
+                  title="Increase Position Y" aria-label="Increase Position Y">
                   <iconify-icon icon="ph:plus-bold"></iconify-icon>
                 </button>
               </div>
@@ -804,11 +829,13 @@
                 <span id="lbl-bulk-gain">0.60x</span>
               </div>
               <div class="slider-control-row">
-                <button type="button" class="btn-slider-step" data-target="slider-bulk-gain" data-dir="-1" title="Decrease Gain" aria-label="Decrease Gain">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-gain" data-dir="-1"
+                  title="Decrease Gain" aria-label="Decrease Gain">
                   <iconify-icon icon="ph:minus-bold"></iconify-icon>
                 </button>
-                <input type="range" id="slider-bulk-gain" min="0.1" max="3" step="0.05" value="0.6" />
-                <button type="button" class="btn-slider-step" data-target="slider-bulk-gain" data-dir="1" title="Increase Gain" aria-label="Increase Gain">
+                <input type="range" id="slider-bulk-gain" min="0.1" max="3" step="0.01" value="0.6" />
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-gain" data-dir="1"
+                  title="Increase Gain" aria-label="Increase Gain">
                   <iconify-icon icon="ph:plus-bold"></iconify-icon>
                 </button>
               </div>
@@ -820,11 +847,13 @@
                 <span id="lbl-bulk-scale">1.00x</span>
               </div>
               <div class="slider-control-row">
-                <button type="button" class="btn-slider-step" data-target="slider-bulk-scale" data-dir="-1" title="Decrease Size Scale" aria-label="Decrease Size Scale">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-scale" data-dir="-1"
+                  title="Decrease Size Scale" aria-label="Decrease Size Scale">
                   <iconify-icon icon="ph:minus-bold"></iconify-icon>
                 </button>
-                <input type="range" id="slider-bulk-scale" min="0.5" max="2" step="0.05" value="1.0" />
-                <button type="button" class="btn-slider-step" data-target="slider-bulk-scale" data-dir="1" title="Increase Size Scale" aria-label="Increase Size Scale">
+                <input type="range" id="slider-bulk-scale" min="0.5" max="2" step="0.01" value="1.0" />
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-scale" data-dir="1"
+                  title="Increase Size Scale" aria-label="Increase Size Scale">
                   <iconify-icon icon="ph:plus-bold"></iconify-icon>
                 </button>
               </div>
@@ -836,11 +865,13 @@
                 <span id="lbl-bulk-offset-x">-24px</span>
               </div>
               <div class="slider-control-row">
-                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-x" data-dir="-1" title="Decrease Position X" aria-label="Decrease Position X">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-x" data-dir="-1"
+                  title="Decrease Position X" aria-label="Decrease Position X">
                   <iconify-icon icon="ph:minus-bold"></iconify-icon>
                 </button>
                 <input type="range" id="slider-bulk-offset-x" min="-150" max="150" step="1" value="-24" />
-                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-x" data-dir="1" title="Increase Position X" aria-label="Increase Position X">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-x" data-dir="1"
+                  title="Increase Position X" aria-label="Increase Position X">
                   <iconify-icon icon="ph:plus-bold"></iconify-icon>
                 </button>
               </div>
@@ -852,11 +883,13 @@
                 <span id="lbl-bulk-offset-y">-24px</span>
               </div>
               <div class="slider-control-row">
-                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-y" data-dir="-1" title="Decrease Position Y" aria-label="Decrease Position Y">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-y" data-dir="-1"
+                  title="Decrease Position Y" aria-label="Decrease Position Y">
                   <iconify-icon icon="ph:minus-bold"></iconify-icon>
                 </button>
                 <input type="range" id="slider-bulk-offset-y" min="-150" max="150" step="1" value="-24" />
-                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-y" data-dir="1" title="Increase Position Y" aria-label="Increase Position Y">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-y" data-dir="1"
+                  title="Increase Position Y" aria-label="Increase Position Y">
                   <iconify-icon icon="ph:plus-bold"></iconify-icon>
                 </button>
               </div>
@@ -962,7 +995,8 @@
             <iconify-icon icon="ph:video-camera-bold"></iconify-icon>
           </div>
           <p class="dropzone-title">Upload or drag a video to add custom watermark</p>
-          <p class="dropzone-sub">Supports MP4, WebM, MOV with full audio preservation (Drop multiple files for Bulk Mode)</p>
+          <p class="dropzone-sub">Supports MP4, WebM, MOV with full audio preservation (Drop multiple files for Bulk
+            Mode)</p>
           <input id="adder-video-input" type="file" accept="video/*" class="hidden" />
         </div>
       </div>
@@ -1002,7 +1036,8 @@
                 <iconify-icon icon="ph:film-strip-bold" width="14"></iconify-icon>
                 <span>Scrub Video Frame:</span>
               </label>
-              <input type="range" id="slider-adder-frame-time" min="0" max="10" step="0.1" value="0" class="mini-scrubber" />
+              <input type="range" id="slider-adder-frame-time" min="0" max="10" step="0.1" value="0"
+                class="mini-scrubber" />
             </div>
           </div>
         </div>
@@ -1024,7 +1059,8 @@
         <div id="adder-text-controls" class="adder-config-card mt-3">
           <div class="adder-field-group">
             <label class="adder-field-label" for="adder-text-input">Watermark Text:</label>
-            <input type="text" id="adder-text-input" class="adder-text-field" value="© My Brand" placeholder="Enter watermark text..." />
+            <input type="text" id="adder-text-input" class="adder-text-field" value="© My Brand"
+              placeholder="Enter watermark text..." />
           </div>
 
           <!-- Quick Text Presets -->
@@ -1087,12 +1123,18 @@
             <div class="adder-col">
               <label class="adder-field-label">Color &amp; Presets:</label>
               <div class="color-picker-row">
-                <input type="color" id="adder-text-color" value="#ffffff" class="color-picker-input" title="Choose Custom Color" />
-                <button type="button" class="color-preset-pill" data-color="#ffffff" style="background:#ffffff;" title="White"></button>
-                <button type="button" class="color-preset-pill" data-color="#000000" style="background:#000000;" title="Black"></button>
-                <button type="button" class="color-preset-pill" data-color="#fbbf24" style="background:#fbbf24;" title="Gold"></button>
-                <button type="button" class="color-preset-pill" data-color="#ef4444" style="background:#ef4444;" title="Red"></button>
-                <button type="button" class="color-preset-pill" data-color="#6366f1" style="background:#6366f1;" title="Indigo"></button>
+                <input type="color" id="adder-text-color" value="#ffffff" class="color-picker-input"
+                  title="Choose Custom Color" />
+                <button type="button" class="color-preset-pill" data-color="#ffffff" style="background:#ffffff;"
+                  title="White"></button>
+                <button type="button" class="color-preset-pill" data-color="#000000" style="background:#000000;"
+                  title="Black"></button>
+                <button type="button" class="color-preset-pill" data-color="#fbbf24" style="background:#fbbf24;"
+                  title="Gold"></button>
+                <button type="button" class="color-preset-pill" data-color="#ef4444" style="background:#ef4444;"
+                  title="Red"></button>
+                <button type="button" class="color-preset-pill" data-color="#6366f1" style="background:#6366f1;"
+                  title="Indigo"></button>
               </div>
             </div>
           </div>
@@ -1152,7 +1194,8 @@
             <button type="button" class="btn-preset btn-adder-anchor" data-anchor="bottom-left" title="Bottom Left">
               <iconify-icon icon="ph:arrow-down-left-bold"></iconify-icon> Bottom Left
             </button>
-            <button type="button" class="btn-preset btn-adder-anchor active" data-anchor="bottom-right" title="Bottom Right">
+            <button type="button" class="btn-preset btn-adder-anchor active" data-anchor="bottom-right"
+              title="Bottom Right">
               <iconify-icon icon="ph:arrow-down-right-bold"></iconify-icon> Bottom Right
             </button>
           </div>
@@ -1166,11 +1209,13 @@
               <span id="lbl-adder-size">42px</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-adder-size" data-dir="-1" title="Decrease Size" aria-label="Decrease Size">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-size" data-dir="-1"
+                title="Decrease Size" aria-label="Decrease Size">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
-              <input type="range" id="slider-adder-size" min="12" max="140" step="2" value="42" />
-              <button type="button" class="btn-slider-step" data-target="slider-adder-size" data-dir="1" title="Increase Size" aria-label="Increase Size">
+              <input type="range" id="slider-adder-size" min="12" max="140" step="1" value="42" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-size" data-dir="1"
+                title="Increase Size" aria-label="Increase Size">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -1182,11 +1227,13 @@
               <span id="lbl-adder-opacity">85%</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-adder-opacity" data-dir="-1" title="Decrease Opacity" aria-label="Decrease Opacity">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-opacity" data-dir="-1"
+                title="Decrease Opacity" aria-label="Decrease Opacity">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
-              <input type="range" id="slider-adder-opacity" min="0.05" max="1.0" step="0.05" value="0.85" />
-              <button type="button" class="btn-slider-step" data-target="slider-adder-opacity" data-dir="1" title="Increase Opacity" aria-label="Increase Opacity">
+              <input type="range" id="slider-adder-opacity" min="0.05" max="1.0" step="0.01" value="0.85" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-opacity" data-dir="1"
+                title="Increase Opacity" aria-label="Increase Opacity">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -1198,11 +1245,13 @@
               <span id="lbl-adder-offset-x">0px</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-x" data-dir="-1" title="Shift Left" aria-label="Shift Left">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-x" data-dir="-1"
+                title="Shift Left" aria-label="Shift Left">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
-              <input type="range" id="slider-adder-offset-x" min="-400" max="400" step="2" value="0" />
-              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-x" data-dir="1" title="Shift Right" aria-label="Shift Right">
+              <input type="range" id="slider-adder-offset-x" min="-400" max="400" step="1" value="0" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-x" data-dir="1"
+                title="Shift Right" aria-label="Shift Right">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -1214,11 +1263,13 @@
               <span id="lbl-adder-offset-y">0px</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-y" data-dir="-1" title="Shift Up" aria-label="Shift Up">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-y" data-dir="-1"
+                title="Shift Up" aria-label="Shift Up">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
-              <input type="range" id="slider-adder-offset-y" min="-400" max="400" step="2" value="0" />
-              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-y" data-dir="1" title="Shift Down" aria-label="Shift Down">
+              <input type="range" id="slider-adder-offset-y" min="-400" max="400" step="1" value="0" />
+              <button type="button" class="btn-slider-step" data-target="slider-adder-offset-y" data-dir="1"
+                title="Shift Down" aria-label="Shift Down">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -1230,11 +1281,13 @@
               <span id="lbl-adder-rotation">0°</span>
             </div>
             <div class="slider-control-row">
-              <button type="button" class="btn-slider-step" data-target="slider-adder-rotation" data-dir="-1" title="Rotate Counter-Clockwise" aria-label="Rotate Counter-Clockwise">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-rotation" data-dir="-1"
+                title="Rotate Counter-Clockwise" aria-label="Rotate Counter-Clockwise">
                 <iconify-icon icon="ph:minus-bold"></iconify-icon>
               </button>
               <input type="range" id="slider-adder-rotation" min="-180" max="180" step="1" value="0" />
-              <button type="button" class="btn-slider-step" data-target="slider-adder-rotation" data-dir="1" title="Rotate Clockwise" aria-label="Rotate Clockwise">
+              <button type="button" class="btn-slider-step" data-target="slider-adder-rotation" data-dir="1"
+                title="Rotate Clockwise" aria-label="Rotate Clockwise">
                 <iconify-icon icon="ph:plus-bold"></iconify-icon>
               </button>
             </div>
@@ -1328,6 +1381,680 @@
 
         <!-- Queue Items List -->
         <div id="bulk-adder-queue-list" class="bulk-queue-list mt-4"></div>
+      </div>
+    </section>
+
+    <!-- Remove & Add Watermark (Dual Action Single-Pass) Panel -->
+    <section id="panel-remove-add" class="card hidden">
+      <!-- Combo Mode Switcher (Single Video vs Bulk Processing) -->
+      <div class="video-mode-switcher">
+        <button type="button" class="btn-mode active" id="btn-combo-mode-single" data-mode="single">
+          <iconify-icon icon="ph:video-bold" width="18"></iconify-icon>
+          <span>Single Video + Dual Tuner</span>
+        </button>
+        <button type="button" class="btn-mode" id="btn-combo-mode-bulk" data-mode="bulk">
+          <iconify-icon icon="ph:files-bold" width="18"></iconify-icon>
+          <span>Bulk Video Process</span>
+          <span class="mode-badge-new">1-PASS BATCH</span>
+        </button>
+      </div>
+
+      <!-- Dual Tuner & Live Preview Container: 3-Column Studio Workspace -->
+      <div id="combo-tuner-container" class="tuner-container combo-workspace-container">
+        <div class="combo-workspace-layout">
+
+          <!-- LEFT SIDEBAR: 1. Gemini Removal Configuration -->
+          <aside class="combo-sidebar combo-sidebar-left" id="combo-sidebar-left"
+            aria-label="Gemini Watermark Removal Controls">
+            <!-- Collapsed Mini Rail (visible when sidebar is docked) -->
+            <div class="combo-sidebar-rail" id="combo-rail-left" title="Click to expand Gemini Removal Controls"
+              role="button" tabindex="0">
+              <button type="button" class="btn-rail-expand" id="btn-rail-expand-left" aria-label="Expand Left Sidebar">
+                <iconify-icon icon="ph:caret-double-right-bold"></iconify-icon>
+              </button>
+              <div class="rail-title-vertical">
+                <iconify-icon icon="ph:eraser-bold"></iconify-icon>
+                <span>1. Gemini Removal</span>
+              </div>
+            </div>
+
+            <!-- Full Sidebar Card -->
+            <div class="combo-card combo-sidebar-card">
+              <div class="combo-card-header">
+                <div class="combo-card-title">
+                  <iconify-icon icon="ph:eraser-bold" class="text-indigo-600" width="18"></iconify-icon>
+                  <span>1. Gemini Removal</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="combo-card-badge step-1">Step 1</span>
+                  <button type="button" class="btn-sidebar-toggle" id="btn-toggle-sidebar-left"
+                    title="Dock sidebar to widen composition stage" aria-label="Collapse Left Sidebar">
+                    <iconify-icon icon="ph:caret-double-left-bold" width="14"></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <p class="combo-section-hint">Mathematically unblend &amp; eliminate the original watermark.</p>
+
+              <!-- Bulk Removal Strategy (Visible in Bulk Mode) -->
+              <div id="combo-bulk-strategy-box" class="bulk-strategy-box mt-3 hidden">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800 flex items-center gap-1">
+                    <iconify-icon icon="ph:gear-six-bold" class="text-indigo-600"></iconify-icon> Batch Strategy:
+                  </span>
+                  <span class="combo-card-badge step-1" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">BATCH</span>
+                </div>
+                <div class="tuner-preset-buttons">
+                  <button type="button" class="btn-preset active text-xs py-1" id="btn-combo-strategy-auto">
+                    <iconify-icon icon="ph:magic-wand-bold"></iconify-icon> Auto-Detect
+                  </button>
+                  <button type="button" class="btn-preset text-xs py-1" id="btn-combo-strategy-manual">
+                    <iconify-icon icon="ph:sliders-horizontal-bold"></iconify-icon> Custom Settings
+                  </button>
+                </div>
+                <p id="combo-bulk-strategy-hint" class="text-xs text-muted mt-2"
+                  style="font-size: 0.72rem; line-height: 1.35;">
+                  Adaptive AI auto-detects watermark location &amp; dimensions per video.
+                </p>
+              </div>
+
+              <!-- Model Presets -->
+              <div class="tuner-preset-row mt-3">
+                <span class="tuner-preset-label">Model Preset:</span>
+                <div class="tuner-preset-buttons">
+                  <button type="button" class="btn-preset active" data-removal-preset="veo">
+                    <iconify-icon icon="ph:video-camera-bold"></iconify-icon> Gemini Omni &amp; Flow
+                  </button>
+                  <button type="button" class="btn-preset" data-removal-preset="corner">
+                    <iconify-icon icon="ph:corners-out"></iconify-icon> Veo (Corner)
+                  </button>
+                  <button type="button" class="btn-preset" data-removal-preset="sparkle">
+                    <iconify-icon icon="ph:sparkle-bold"></iconify-icon> Standard Sparkle
+                  </button>
+                </div>
+              </div>
+
+              <!-- Sliders -->
+              <div class="tuner-sliders mt-3">
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Strength (Gain)</span>
+                    <span id="lbl-combo-gain">0.60x</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-gain" data-dir="-1"
+                      title="Decrease Gain" aria-label="Decrease Gain">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="slider-combo-gain" min="0.1" max="3" step="0.01" value="0.6" />
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-gain" data-dir="1"
+                      title="Increase Gain" aria-label="Increase Gain">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Size Scale</span>
+                    <span id="lbl-combo-scale">1.00x</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-scale" data-dir="-1"
+                      title="Decrease Size Scale" aria-label="Decrease Size Scale">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="slider-combo-scale" min="0.5" max="2" step="0.01" value="1.0" />
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-scale" data-dir="1"
+                      title="Increase Size Scale" aria-label="Increase Size Scale">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Position X</span>
+                    <span id="lbl-combo-offset-x">-24px</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-offset-x" data-dir="-1"
+                      title="Decrease Position X" aria-label="Decrease Position X">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="slider-combo-offset-x" min="-150" max="150" step="1" value="-24" />
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-offset-x" data-dir="1"
+                      title="Increase Position X" aria-label="Increase Position X">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Position Y</span>
+                    <span id="lbl-combo-offset-y">-24px</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-offset-y" data-dir="-1"
+                      title="Decrease Position Y" aria-label="Decrease Position Y">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="slider-combo-offset-y" min="-150" max="150" step="1" value="-24" />
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-offset-y" data-dir="1"
+                      title="Increase Position Y" aria-label="Increase Position Y">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button type="button" id="btn-combo-reset-sliders"
+                  class="btn btn-secondary text-xs w-full justify-center">
+                  <iconify-icon icon="ph:arrow-counter-clockwise"></iconify-icon> Reset Removal Sliders
+                </button>
+              </div>
+
+              <!-- Dual Zoomed Comparison Cards (Inside Removal Sidebar for Instant Visual Feedback) -->
+              <div class="combo-zoom-section mt-4 pt-3 border-t border-slate-100">
+                <span class="canvas-title text-xs mb-2 block font-semibold text-slate-700">
+                  <iconify-icon icon="ph:magnifying-glass-bold" width="13"></iconify-icon>
+                  Removal Verification Zoom:
+                </span>
+                <div class="combo-zoom-grid">
+                  <div class="zoom-card">
+                    <span class="canvas-title text-blue-600 text-xs">
+                      <iconify-icon icon="ph:magnifying-glass-plus" width="12"></iconify-icon>
+                      Original
+                    </span>
+                    <div class="canvas-wrapper">
+                      <canvas id="combo-zoom-canvas" width="200" height="200"></canvas>
+                    </div>
+                  </div>
+                  <div class="zoom-card">
+                    <span class="canvas-title text-green-600 text-xs">
+                      <iconify-icon icon="ph:check-circle" width="12"></iconify-icon>
+                      Cleaned
+                    </span>
+                    <div class="canvas-wrapper">
+                      <canvas id="combo-zoom-cleaned-canvas" width="200" height="200"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- CENTER MAIN SECTION: Master Video Stage & Primary Action -->
+          <main class="combo-main-stage" aria-label="Master Video Preview &amp; Execution">
+            <!-- Detection Status Badge -->
+            <div id="combo-detect-badge" class="detect-badge hidden mb-2"></div>
+
+            <!-- Single Dropzone (shown in Single Mode when no video loaded) -->
+            <div id="combo-single-container">
+              <div id="combo-video-dropzone" class="dropzone">
+                <div class="dropzone-icon">
+                  <iconify-icon icon="ph:magic-wand-bold"></iconify-icon>
+                </div>
+                <p class="dropzone-title">Upload or drag a video to remove Gemini watermark &amp; add custom watermark
+                  simultaneously</p>
+                <p class="dropzone-sub">Single-pass processing eliminates video re-encoding artifacts and preserves 100%
+                  original quality (Drop multiple files for Bulk Mode)</p>
+                <input id="combo-video-input" type="file" accept="video/*" class="hidden" />
+              </div>
+            </div>
+
+            <!-- Bulk Dropzone (shown in Bulk Mode when queue is empty) -->
+            <div id="combo-bulk-container" class="hidden">
+              <div id="bulk-combo-dropzone" class="dropzone bulk-dropzone">
+                <div class="dropzone-icon">
+                  <iconify-icon icon="ph:files-bold" width="36"></iconify-icon>
+                </div>
+                <p class="dropzone-title">Upload or drag multiple videos for 1-Pass Batch Processing</p>
+                <p class="dropzone-sub">Removes Gemini watermark &amp; applies your custom logo/text to all videos
+                  without quality loss</p>
+                <input id="bulk-combo-input" type="file" accept="video/*" multiple class="hidden" />
+              </div>
+            </div>
+
+            <!-- Master Stage Card (visible when video or batch is active) -->
+            <div id="combo-stage-card" class="combo-card combo-stage-card hidden">
+              <div class="combo-card-header">
+                <div class="combo-card-title">
+                  <iconify-icon icon="ph:play-circle-bold" class="text-indigo-600" width="18"></iconify-icon>
+                  <span>Live Composition Stage</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="canvas-subtitle text-xs text-muted">
+                    Time: <strong id="lbl-combo-frame-time" class="text-indigo-600 font-mono">0.0s</strong>
+                  </span>
+                  <span class="combo-card-badge step-stage">Live</span>
+                  <button type="button" id="btn-combo-change-video" class="btn-change-video hidden"
+                    title="Load a different video">
+                    <iconify-icon icon="ph:arrow-clockwise-bold"></iconify-icon>
+                    <span>Change Video</span>
+                  </button>
+                  <button type="button" id="btn-combo-cinema" class="btn-cinema-toggle"
+                    title="Toggle Cinema Focus Stage (Maximizes stage view)">
+                    <iconify-icon icon="ph:arrows-out-simple-bold" width="14"></iconify-icon>
+                    <span class="cinema-btn-text">Cinema Stage</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Master Canvas -->
+              <div class="canvas-wrapper combo-canvas-wrapper">
+                <canvas id="combo-main-canvas"></canvas>
+              </div>
+
+              <!-- Frame Scrubber -->
+              <div class="frame-scrubber-row mt-3">
+                <label for="slider-combo-frame-time" class="text-xs text-muted flex items-center gap-1">
+                  <iconify-icon icon="ph:film-strip-bold" width="14"></iconify-icon>
+                  <span>Scrub Timestamp:</span>
+                </label>
+                <input type="range" id="slider-combo-frame-time" min="0" max="10" step="0.1" value="0"
+                  class="mini-scrubber" />
+              </div>
+
+              <!-- Primary Action / Export CTA (Single Mode) -->
+              <div class="tuner-actions mt-4" id="combo-single-action-box">
+                <button type="button" id="btn-combo-export" class="btn btn-primary combo-export-btn">
+                  <iconify-icon icon="ph:sparkle-bold" width="20"></iconify-icon>
+                  <span>Remove &amp; Add Watermark (Export MP4)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Single Mode Processing Status -->
+            <div id="combo-status" class="hidden mt-4 text-center">
+              <p class="mb-2">Removing Gemini Watermark &amp; Adding Custom Watermark (1-Pass Encoding)...</p>
+              <div class="progress-bar-container">
+                <div id="combo-progress-bar" class="progress-bar-fill"></div>
+              </div>
+              <p id="combo-progress-text" class="progress-text">0%</p>
+            </div>
+
+            <div id="combo-results" class="hidden mt-4"></div>
+
+            <!-- Bulk Combo Queue Section -->
+            <div id="bulk-combo-queue-wrapper" class="bulk-queue-wrapper hidden mt-4">
+              <div class="bulk-header-card">
+                <!-- Strategy Switcher for Bulk Mode -->
+                <div class="tuner-preset-row mb-3">
+                  <span class="tuner-preset-label">Bulk Removal Strategy:</span>
+                  <div class="tuner-preset-buttons">
+                    <button type="button" class="btn-preset active" id="btn-bulk-combo-strategy-auto">
+                      <iconify-icon icon="ph:magic-wand-bold"></iconify-icon> Adaptive Auto-Detect (Per Video)
+                    </button>
+                    <button type="button" class="btn-preset" id="btn-bulk-combo-strategy-manual">
+                      <iconify-icon icon="ph:sliders-horizontal-bold"></iconify-icon> Custom Settings (Apply to All)
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Global Stats Overview -->
+                <div class="bulk-stats-row">
+                  <div class="bulk-stat-pill">
+                    <span class="stat-label">Total Videos</span>
+                    <strong id="bulk-combo-count-total">0</strong>
+                  </div>
+                  <div class="bulk-stat-pill completed">
+                    <span class="stat-label">Completed</span>
+                    <strong id="bulk-combo-count-completed">0</strong>
+                  </div>
+                  <div class="bulk-stat-pill processing">
+                    <span class="stat-label">Processing</span>
+                    <strong id="bulk-combo-count-processing">0</strong>
+                  </div>
+                  <div class="bulk-stat-pill queued">
+                    <span class="stat-label">Queued</span>
+                    <strong id="bulk-combo-count-queued">0</strong>
+                  </div>
+                </div>
+
+                <!-- Global Overall Batch Progress Bar -->
+                <div id="bulk-combo-overall-progress-container" class="bulk-overall-progress hidden mt-3">
+                  <div class="progress-bar-header">
+                    <span id="bulk-combo-overall-status-text">Batch Processing Active...</span>
+                    <span id="bulk-combo-overall-percent-text">0%</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div id="bulk-combo-overall-progress-bar" class="progress-bar-fill" style="width: 0%"></div>
+                  </div>
+                </div>
+
+                <!-- Action Controls Bar -->
+                <div class="bulk-action-bar mt-4">
+                  <div class="bulk-action-left">
+                    <button type="button" id="btn-bulk-combo-start" class="btn btn-primary">
+                      <iconify-icon icon="ph:play-fill" width="16"></iconify-icon>
+                      <span>Start Bulk Processing</span>
+                    </button>
+                    <button type="button" id="btn-bulk-combo-pause" class="btn btn-secondary hidden">
+                      <iconify-icon icon="ph:pause-fill" width="16"></iconify-icon>
+                      <span>Pause Processing</span>
+                    </button>
+                    <button type="button" id="btn-bulk-combo-download-all" class="btn btn-success hidden">
+                      <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
+                      <span>Download All Processed MP4s</span>
+                    </button>
+                  </div>
+
+                  <div class="bulk-action-right">
+                    <button type="button" id="btn-bulk-combo-add-more" class="btn btn-secondary text-xs">
+                      <iconify-icon icon="ph:plus-bold" width="14"></iconify-icon>
+                      <span>Add More Videos</span>
+                    </button>
+                    <button type="button" id="btn-bulk-combo-clear" class="btn btn-secondary text-xs text-danger">
+                      <iconify-icon icon="ph:trash-bold" width="14"></iconify-icon>
+                      <span>Clear Queue</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Queue Items List below Start Bulk Processing -->
+              <div id="bulk-combo-queue-list" class="bulk-queue-list mt-4"></div>
+            </div>
+          </main>
+
+          <!-- RIGHT SIDEBAR: 2. Custom Watermark & Logo Settings -->
+          <aside class="combo-sidebar combo-sidebar-right" id="combo-sidebar-right"
+            aria-label="Custom Watermark and Logo Controls">
+            <!-- Collapsed Mini Rail (visible when sidebar is docked) -->
+            <div class="combo-sidebar-rail" id="combo-rail-right" title="Click to expand Custom Watermark Controls"
+              role="button" tabindex="0">
+              <button type="button" class="btn-rail-expand" id="btn-rail-expand-right"
+                aria-label="Expand Right Sidebar">
+                <iconify-icon icon="ph:caret-double-left-bold"></iconify-icon>
+              </button>
+              <div class="rail-title-vertical">
+                <iconify-icon icon="ph:stamp-bold"></iconify-icon>
+                <span>2. Watermark &amp; Logo</span>
+              </div>
+            </div>
+
+            <!-- Full Sidebar Card -->
+            <div class="combo-card combo-sidebar-card">
+              <div class="combo-card-header">
+                <div class="combo-card-title">
+                  <iconify-icon icon="ph:stamp-bold" class="text-indigo-600" width="18"></iconify-icon>
+                  <span>2. Custom Watermark</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span id="combo-bulk-adder-badge" class="combo-card-badge step-2 hidden"
+                    style="background: rgba(168, 85, 247, 0.18); color: #7e22ce;">Batch Mode</span>
+                  <span class="combo-card-badge step-2">Step 2</span>
+                  <button type="button" class="btn-sidebar-toggle" id="btn-toggle-sidebar-right"
+                    title="Dock sidebar to widen composition stage" aria-label="Collapse Right Sidebar">
+                    <iconify-icon icon="ph:caret-double-right-bold" width="14"></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <p class="combo-section-hint">Brand your video with custom typography or your transparent logo.</p>
+
+              <!-- Watermark Type Switcher -->
+              <div class="tuner-preset-row mt-3">
+                <span class="tuner-preset-label">Watermark Type:</span>
+                <div class="tuner-preset-buttons">
+                  <button type="button" class="btn-preset active" id="btn-combo-type-text">
+                    <iconify-icon icon="ph:text-t-bold"></iconify-icon> Text
+                  </button>
+                  <button type="button" class="btn-preset" id="btn-combo-type-image">
+                    <iconify-icon icon="ph:image-bold"></iconify-icon> Logo
+                  </button>
+                </div>
+              </div>
+
+              <!-- Text Watermark Controls -->
+              <div id="combo-text-controls" class="adder-config-card mt-3">
+                <div class="adder-field-group">
+                  <label class="adder-field-label" for="combo-text-input">Watermark Text:</label>
+                  <input type="text" id="combo-text-input" class="adder-text-field" value="© My Brand"
+                    placeholder="Enter watermark text..." />
+                </div>
+
+                <!-- Quick Text Presets -->
+                <div class="adder-presets-row mt-2">
+                  <span class="text-xs text-muted">Quick Text:</span>
+                  <button type="button" class="btn-adder-text-preset btn-combo-text-preset" data-text="© Copyright">©
+                    Copyright</button>
+                  <button type="button" class="btn-adder-text-preset btn-combo-text-preset"
+                    data-text="Sample Video">Sample Video</button>
+                  <button type="button" class="btn-adder-text-preset btn-combo-text-preset"
+                    data-text="Confidential">Confidential</button>
+                  <button type="button" class="btn-adder-text-preset btn-combo-text-preset"
+                    data-text="@username">@username</button>
+                </div>
+
+                <div class="adder-row-split mt-3">
+                  <div class="adder-col">
+                    <div class="font-label-row">
+                      <label class="adder-field-label" for="combo-font-family">Font Family:</label>
+                      <span class="text-xs text-indigo-600 font-medium">Google Fonts</span>
+                    </div>
+                    <select id="combo-font-family" class="adder-select">
+                      <optgroup label="Popular Google Fonts">
+                        <option value="Ubuntu, sans-serif" selected>Ubuntu (Modern)</option>
+                        <option value="Montserrat, sans-serif">Montserrat (Geometric)</option>
+                        <option value="Poppins, sans-serif">Poppins (Clean)</option>
+                        <option value="Bebas Neue, sans-serif">Bebas Neue (Headline)</option>
+                        <option value="Oswald, sans-serif">Oswald (Condensed)</option>
+                        <option value="Anton, sans-serif">Anton (Impactful)</option>
+                        <option value="Inter, sans-serif">Inter (Minimal)</option>
+                        <option value="Playfair Display, serif">Playfair Display (Luxury Serif)</option>
+                        <option value="Pacifico, cursive">Pacifico (Handwritten)</option>
+                        <option value="Lobster, cursive">Lobster (Script)</option>
+                        <option value="Russo One, sans-serif">Russo One (Cyber / Bold)</option>
+                        <option value="Cinzel, serif">Cinzel (Cinematic)</option>
+                        <option value="JetBrains Mono, monospace">JetBrains Mono (Tech)</option>
+                      </optgroup>
+                      <optgroup label="Web Safe Fonts">
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Impact, fantasy">Impact</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="Courier New, monospace">Courier New</option>
+                        <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
+                      </optgroup>
+                      <optgroup label="Custom Google Font">
+                        <option value="custom">+ Paste Google Font Link / Name...</option>
+                      </optgroup>
+                    </select>
+                  </div>
+
+                  <div class="adder-col">
+                    <label class="adder-field-label" for="combo-font-weight">Font Weight:</label>
+                    <select id="combo-font-weight" class="adder-select">
+                      <option value="300">300 (Light)</option>
+                      <option value="400">400 (Regular)</option>
+                      <option value="500">500 (Medium)</option>
+                      <option value="600">600 (Semi-Bold)</option>
+                      <option value="700" selected>700 (Bold)</option>
+                      <option value="800">800 (Extra Bold)</option>
+                      <option value="900">900 (Black / Heavy)</option>
+                    </select>
+                  </div>
+
+                  <div class="adder-col">
+                    <label class="adder-field-label">Color &amp; Presets:</label>
+                    <div class="color-picker-row">
+                      <input type="color" id="combo-text-color" value="#ffffff" class="color-picker-input"
+                        title="Choose Custom Color" />
+                      <button type="button" class="color-preset-pill" data-color="#ffffff" style="background:#ffffff;"
+                        title="White"></button>
+                      <button type="button" class="color-preset-pill" data-color="#000000" style="background:#000000;"
+                        title="Black"></button>
+                      <button type="button" class="color-preset-pill" data-color="#fbbf24" style="background:#fbbf24;"
+                        title="Gold"></button>
+                      <button type="button" class="color-preset-pill" data-color="#ef4444" style="background:#ef4444;"
+                        title="Red"></button>
+                      <button type="button" class="color-preset-pill" data-color="#6366f1" style="background:#6366f1;"
+                        title="Indigo"></button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Custom Google Font Link / Name Input Box -->
+                <div id="combo-custom-font-box" class="adder-custom-font-box mt-3 hidden">
+                  <label class="adder-field-label mb-1" for="combo-custom-font-input">
+                    <iconify-icon icon="ph:google-logo-bold" class="text-indigo-600" width="14"></iconify-icon>
+                    <span>Load any Google Font (Enter Link or Font Name):</span>
+                  </label>
+                  <div class="custom-font-input-wrapper">
+                    <input type="text" id="combo-custom-font-input" class="adder-custom-font-field"
+                      placeholder="e.g. Dancing Script, Press Start 2P, or https://fonts.googleapis.com/css2?family=..." />
+                    <button type="button" id="btn-combo-load-custom-font" class="btn btn-secondary btn-xs">
+                      <iconify-icon icon="ph:download-simple-bold" width="14"></iconify-icon>
+                      <span>Load Font</span>
+                    </button>
+                  </div>
+                  <div id="combo-font-status" class="adder-font-status-msg hidden"></div>
+                </div>
+
+                <div class="mt-2">
+                  <label class="adder-checkbox-label">
+                    <input type="checkbox" id="combo-text-outline" checked />
+                    <span>High-contrast dark outline / shadow</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Image Watermark Controls (Logo Upload) -->
+              <div id="combo-image-controls" class="adder-config-card mt-3 hidden">
+                <div class="adder-logo-upload-box">
+                  <div id="combo-logo-dropzone" class="adder-mini-dropzone">
+                    <img id="combo-logo-thumb" class="adder-logo-thumb hidden"
+                      alt="Uploaded watermark logo thumbnail" />
+                    <div class="adder-logo-prompt">
+                      <iconify-icon icon="ph:upload-simple-bold" width="20"></iconify-icon>
+                      <span>Click to Upload Watermark Logo (PNG, WebP, JPG, SVG)</span>
+                    </div>
+                    <input type="file" id="combo-logo-input" accept="image/*" class="hidden" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Placement Corner Anchors -->
+              <div class="tuner-preset-row mt-3">
+                <span class="tuner-preset-label">Placement Corner:</span>
+                <div class="tuner-preset-buttons anchor-grid">
+                  <button type="button" class="btn-preset btn-combo-anchor" data-anchor="top-left" title="Top Left">
+                    <iconify-icon icon="ph:arrow-up-left-bold"></iconify-icon> Top Left
+                  </button>
+                  <button type="button" class="btn-preset btn-combo-anchor" data-anchor="top-right" title="Top Right">
+                    <iconify-icon icon="ph:arrow-up-right-bold"></iconify-icon> Top Right
+                  </button>
+                  <button type="button" class="btn-preset btn-combo-anchor" data-anchor="center" title="Center">
+                    <iconify-icon icon="ph:arrows-out-cardinal-bold"></iconify-icon> Center
+                  </button>
+                  <button type="button" class="btn-preset btn-combo-anchor" data-anchor="bottom-left"
+                    title="Bottom Left">
+                    <iconify-icon icon="ph:arrow-down-left-bold"></iconify-icon> Bottom Left
+                  </button>
+                  <button type="button" class="btn-preset btn-combo-anchor active" data-anchor="bottom-right"
+                    title="Bottom Right">
+                    <iconify-icon icon="ph:arrow-down-right-bold"></iconify-icon> Bottom Right
+                  </button>
+                </div>
+              </div>
+
+              <!-- Sliders with - / + buttons -->
+              <div class="tuner-sliders mt-2">
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Size / Scale</span>
+                    <span id="lbl-combo-adder-size">42px</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-adder-size" data-dir="-1"
+                      title="Decrease Size" aria-label="Decrease Size">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="slider-combo-adder-size" min="12" max="140" step="1" value="42" />
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-adder-size" data-dir="1"
+                      title="Increase Size" aria-label="Increase Size">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Opacity</span>
+                    <span id="lbl-combo-adder-opacity">85%</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="combo-adder-opacity" data-dir="-1"
+                      title="Decrease Opacity" aria-label="Decrease Opacity">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="combo-adder-opacity" min="0.05" max="1.0" step="0.01" value="0.85" />
+                    <button type="button" class="btn-slider-step" data-target="combo-adder-opacity" data-dir="1"
+                      title="Increase Opacity" aria-label="Increase Opacity">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Position Offset X</span>
+                    <span id="lbl-combo-adder-offset-x">0px</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-adder-offset-x"
+                      data-dir="-1" title="Shift Left" aria-label="Shift Left">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="slider-combo-adder-offset-x" min="-400" max="400" step="1" value="0" />
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-adder-offset-x" data-dir="1"
+                      title="Shift Right" aria-label="Shift Right">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Position Offset Y</span>
+                    <span id="lbl-combo-adder-offset-y">0px</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-adder-offset-y"
+                      data-dir="-1" title="Shift Up" aria-label="Shift Up">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="slider-combo-adder-offset-y" min="-400" max="400" step="1" value="0" />
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-adder-offset-y" data-dir="1"
+                      title="Shift Down" aria-label="Shift Down">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="slider-group">
+                  <div class="tuner-slider-label">
+                    <span>Rotation Angle</span>
+                    <span id="lbl-combo-adder-rotation">0°</span>
+                  </div>
+                  <div class="slider-control-row">
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-adder-rotation"
+                      data-dir="-1" title="Rotate Counter-Clockwise" aria-label="Rotate Counter-Clockwise">
+                      <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                    </button>
+                    <input type="range" id="slider-combo-adder-rotation" min="-180" max="180" step="1" value="0" />
+                    <button type="button" class="btn-slider-step" data-target="slider-combo-adder-rotation" data-dir="1"
+                      title="Rotate Clockwise" aria-label="Rotate Clockwise">
+                      <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+        </div>
       </div>
     </section>
 
@@ -2044,6 +2771,7 @@
   <script src="./image-processing.js"></script>
   <script src="./video-processing.js"></script>
   <script src="./video-watermark-adder.js"></script>
+  <script src="./video-remove-and-add.js"></script>
   <script src="./ui.js"></script>
   <!-- BuyMeACoffee Widget (Lazy Loaded for Optimal Core Web Vitals) -->
   <script>

@@ -921,7 +921,7 @@ function initVideoWatermarkAdder() {
     if (sliderSize) {
       sliderSize.min = 12;
       sliderSize.max = 140;
-      sliderSize.step = 2;
+      sliderSize.step = 1;
       sliderSize.value = config.fontSize;
     }
     updateLabels();
@@ -937,7 +937,7 @@ function initVideoWatermarkAdder() {
     if (sliderSize) {
       sliderSize.min = 0.1;
       sliderSize.max = 2.0;
-      sliderSize.step = 0.05;
+      sliderSize.step = 0.01;
       sliderSize.value = config.scale;
     }
     updateLabels();

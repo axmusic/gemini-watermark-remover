@@ -72,6 +72,8 @@ cd gemini-watermark-remover
 # Option A: Python
 python3 -m http.server 8000
 
+python -m http.server 8000
+
 # Option B: Node.js (npx serve)
 npx serve .
 ```

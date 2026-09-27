@@ -10,6 +10,7 @@ if (typeof WatermarkEngine === 'undefined') {
     './image-processing.js',
     './video-processing.js',
     './video-watermark-adder.js',
+    './video-remove-and-add.js',
     './ui.js'
   ].forEach((src) => {
     const s = document.createElement('script');

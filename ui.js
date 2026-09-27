@@ -85,6 +85,9 @@ function init() {
   if (typeof initVideoWatermarkAdder === 'function') {
     initVideoWatermarkAdder();
   }
+  if (typeof initVideoRemoveAndAdd === 'function') {
+    initVideoRemoveAndAdd();
+  }
   initSliderButtons();
 }
 
@@ -98,9 +101,11 @@ function initTabs() {
   const tabImage = document.getElementById('tab-image');
   const tabVideo = document.getElementById('tab-video');
   const tabAddWatermark = document.getElementById('tab-add-watermark');
+  const tabRemoveAdd = document.getElementById('tab-remove-add');
   const panelImage = document.getElementById('panel-image');
   const panelVideo = document.getElementById('panel-video');
   const panelAddWatermark = document.getElementById('panel-add-watermark');
+  const panelRemoveAdd = document.getElementById('panel-remove-add');
 
   if (!tabImage || !tabVideo || !panelImage || !panelVideo) return;
 
@@ -108,16 +113,20 @@ function initTabs() {
     if (target === 'image') {
       currentTab = 'image';
       try { sessionStorage.setItem('activeTab', 'image'); } catch (e) { }
+      document.querySelector('.container')?.classList.remove('studio-mode');
       tabImage.classList.add('active');
       tabVideo.classList.remove('active');
       tabAddWatermark?.classList.remove('active');
+      tabRemoveAdd?.classList.remove('active');
       panelImage.style.display = 'block';
       panelVideo.style.display = 'none';
       if (panelAddWatermark) panelAddWatermark.style.display = 'none';
+      if (panelRemoveAdd) panelRemoveAdd.style.display = 'none';
       panelImage.classList.remove('hidden');
       panelVideo.classList.add('hidden');
       if (panelAddWatermark) panelAddWatermark.classList.add('hidden');
-      if (updateHash && (window.location.hash.toLowerCase().includes('video') || window.location.hash.toLowerCase().includes('watermark'))) {
+      if (panelRemoveAdd) panelRemoveAdd.classList.add('hidden');
+      if (updateHash && (window.location.hash.toLowerCase().includes('video') || window.location.hash.toLowerCase().includes('watermark') || window.location.hash.toLowerCase().includes('remove-add'))) {
         try {
           history.replaceState(null, '', window.location.pathname + window.location.search);
         } catch (e) { }
@@ -125,15 +134,19 @@ function initTabs() {
     } else if (target === 'video') {
       currentTab = 'video';
       try { sessionStorage.setItem('activeTab', 'video'); } catch (e) { }
+      document.querySelector('.container')?.classList.remove('studio-mode');
       tabVideo.classList.add('active');
       tabImage.classList.remove('active');
       tabAddWatermark?.classList.remove('active');
+      tabRemoveAdd?.classList.remove('active');
       panelVideo.style.display = 'block';
       panelImage.style.display = 'none';
       if (panelAddWatermark) panelAddWatermark.style.display = 'none';
+      if (panelRemoveAdd) panelRemoveAdd.style.display = 'none';
       panelVideo.classList.remove('hidden');
       panelImage.classList.add('hidden');
       if (panelAddWatermark) panelAddWatermark.classList.add('hidden');
+      if (panelRemoveAdd) panelRemoveAdd.classList.add('hidden');
       if (updateHash) {
         try {
           history.replaceState(null, '', window.location.pathname + window.location.search + '#video');
@@ -142,18 +155,43 @@ function initTabs() {
     } else if (target === 'add-watermark') {
       currentTab = 'add-watermark';
       try { sessionStorage.setItem('activeTab', 'add-watermark'); } catch (e) { }
+      document.querySelector('.container')?.classList.remove('studio-mode');
       tabAddWatermark?.classList.add('active');
       tabImage.classList.remove('active');
       tabVideo.classList.remove('active');
+      tabRemoveAdd?.classList.remove('active');
       if (panelAddWatermark) panelAddWatermark.style.display = 'block';
       panelImage.style.display = 'none';
       panelVideo.style.display = 'none';
+      if (panelRemoveAdd) panelRemoveAdd.style.display = 'none';
       if (panelAddWatermark) panelAddWatermark.classList.remove('hidden');
       panelImage.classList.add('hidden');
       panelVideo.classList.add('hidden');
+      if (panelRemoveAdd) panelRemoveAdd.classList.add('hidden');
       if (updateHash) {
         try {
           history.replaceState(null, '', window.location.pathname + window.location.search + '#add-watermark');
+        } catch (e) { }
+      }
+    } else if (target === 'remove-add') {
+      currentTab = 'remove-add';
+      try { sessionStorage.setItem('activeTab', 'remove-add'); } catch (e) { }
+      document.querySelector('.container')?.classList.add('studio-mode');
+      tabRemoveAdd?.classList.add('active');
+      tabImage.classList.remove('active');
+      tabVideo.classList.remove('active');
+      tabAddWatermark?.classList.remove('active');
+      if (panelRemoveAdd) panelRemoveAdd.style.display = 'block';
+      panelImage.style.display = 'none';
+      panelVideo.style.display = 'none';
+      if (panelAddWatermark) panelAddWatermark.style.display = 'none';
+      if (panelRemoveAdd) panelRemoveAdd.classList.remove('hidden');
+      panelImage.classList.add('hidden');
+      panelVideo.classList.add('hidden');
+      if (panelAddWatermark) panelAddWatermark.classList.add('hidden');
+      if (updateHash) {
+        try {
+          history.replaceState(null, '', window.location.pathname + window.location.search + '#remove-add');
         } catch (e) { }
       }
     }
@@ -176,12 +214,23 @@ function initTabs() {
     };
   }
 
-  // Deep-link check for video or add-watermark intent (from search engines or internal links)
+  if (tabRemoveAdd) {
+    tabRemoveAdd.onclick = (e) => {
+      e.preventDefault();
+      switchTab('remove-add', true);
+    };
+  }
+
+  // Deep-link check for video, add-watermark, or remove-add intent
   function checkUrlIntent() {
     const hash = (window.location.hash || '').toLowerCase();
     const urlParams = new URLSearchParams(window.location.search);
     const param = (urlParams.get('tab') || urlParams.get('type') || '').toLowerCase();
 
+    if (hash === '#remove-add' || hash === '#panel-remove-add' || param === 'remove-add' || param === 'combo' || param === 'replace') {
+      switchTab('remove-add');
+      return true;
+    }
     if (hash === '#add-watermark' || hash === '#panel-add-watermark' || param === 'add-watermark' || param === 'watermark' || param === 'adder') {
       switchTab('add-watermark');
       return true;
@@ -196,7 +245,9 @@ function initTabs() {
   if (!checkUrlIntent()) {
     try {
       const savedTab = sessionStorage.getItem('activeTab');
-      if (savedTab === 'add-watermark') {
+      if (savedTab === 'remove-add') {
+        switchTab('remove-add');
+      } else if (savedTab === 'add-watermark') {
         switchTab('add-watermark');
       } else if (savedTab === 'video') {
         switchTab('video');
@@ -210,7 +261,7 @@ function initTabs() {
     checkUrlIntent();
   });
 
-  // Attach click listeners to any links pointing to video or add-watermark tab
+  // Attach click listeners to any links pointing to video, add-watermark, or remove-add tab
   document.querySelectorAll('a[href="#panel-video"], a[href="#video"]').forEach(link => {
     link.addEventListener('click', () => {
       switchTab('video', true);
@@ -220,6 +271,12 @@ function initTabs() {
   document.querySelectorAll('a[href="#panel-add-watermark"], a[href="#add-watermark"]').forEach(link => {
     link.addEventListener('click', () => {
       switchTab('add-watermark', true);
+    });
+  });
+
+  document.querySelectorAll('a[href="#panel-remove-add"], a[href="#remove-add"]').forEach(link => {
+    link.addEventListener('click', () => {
+      switchTab('remove-add', true);
     });
   });
 }
