@@ -132,7 +132,7 @@ class VideoRemoveAndAddEngine {
    * 4. Encode directly into output MP4 with 100% audio passthrough
    */
   async process(file, removalConfig, adderConfig, logoImg = null, opts = {}) {
-    const onProgress = opts.onProgress || (() => {});
+    const onProgress = opts.onProgress || (() => { });
     const gain = removalConfig.gain ?? COMBO_REMOVAL_DEFAULTS.gain;
 
     const mb = await this._lib();
@@ -321,7 +321,7 @@ class BulkVideoRemoveAndAddQueue {
       fontFamily: 'Ubuntu, sans-serif',
       fontWeight: '700',
       color: '#ffffff',
-      outline: true,
+      outline: false,
       strokeColor: 'rgba(0, 0, 0, 0.75)',
       opacity: 0.85,
       anchor: 'bottom-right',
@@ -952,12 +952,12 @@ function initVideoRemoveAndAdd() {
 
   const adderConfig = {
     type: 'text',
-    text: '© My Brand',
+    text: '© AXWON GROUP',
     fontSize: 42,
     fontFamily: 'Ubuntu, sans-serif',
-    fontWeight: '700',
+    fontWeight: '400',
     color: '#ffffff',
-    outline: true,
+    outline: false,
     strokeColor: 'rgba(0, 0, 0, 0.75)',
     opacity: 0.85,
     anchor: 'bottom-right',

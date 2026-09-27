@@ -185,7 +185,7 @@ class VideoWatermarkAdderEngine {
   }
 
   async process(videoFile, config, logoImg = null, opts = {}) {
-    const onProgress = opts.onProgress || (() => {});
+    const onProgress = opts.onProgress || (() => { });
 
     const mb = await this._lib();
     const {
@@ -680,7 +680,7 @@ class BulkVideoAdderQueue {
     }
 
     const cfg = this.getConfig();
-    const watermarkBadge = cfg.type === 'text' 
+    const watermarkBadge = cfg.type === 'text'
       ? `Text: "${(cfg.text || 'Watermark').slice(0, 18)}"`
       : 'Logo Overlay';
 
@@ -817,9 +817,9 @@ function initVideoWatermarkAdder() {
 
   const config = {
     type: 'text', // 'text' | 'image'
-    text: '© My Brand',
+    text: '© AXWON GROUP',
     fontSize: 42,
-    fontWeight: '700',
+    fontWeight: '400',
     fontFamily: 'Ubuntu, sans-serif',
     color: '#ffffff',
     strokeColor: 'rgba(0, 0, 0, 0.8)',
