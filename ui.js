@@ -692,7 +692,7 @@ function initVideoRemover() {
     if (sliderScale) sliderScale.value = currentSettings.sizeScale;
 
     const activeKey = (currentDetected && currentDetected.presetKey) || 'veo';
-    document.querySelectorAll('#panel-video .btn-preset').forEach(b => {
+    document.querySelectorAll('#video-single-container .btn-preset').forEach(b => {
       b.classList.toggle('active', b.dataset.preset === activeKey);
     });
 
@@ -701,7 +701,7 @@ function initVideoRemover() {
     renderTuner();
   }
 
-  const vidPresetButtons = document.querySelectorAll('#panel-video .btn-preset');
+  const vidPresetButtons = document.querySelectorAll('#video-single-container .btn-preset');
   vidPresetButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       vidPresetButtons.forEach(b => b.classList.remove('active'));

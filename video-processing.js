@@ -361,6 +361,21 @@ function detectVideoWatermarkCandidate(imageData, width, height, bgImg) {
       }
     }
 
+    // 1-pixel precision fine alignment pass
+    for (let fdy = -3; fdy <= 3; fdy += 1) {
+      for (let fdx = -3; fdx <= 3; fdx += 1) {
+        const testX = Math.max(0, Math.min(width - refinedSize, refinedX + fdx));
+        const testY = Math.max(0, Math.min(height - refinedSize, refinedY + fdy));
+        const { score } = evaluateCandidateMatch(imageData, width, height, bgImg, { x: testX, y: testY, size: refinedSize });
+        const weightedScore = score * (bestMatch.layout.prior || 1.0);
+        if (weightedScore > refinedScore) {
+          refinedScore = weightedScore;
+          refinedX = testX;
+          refinedY = testY;
+        }
+      }
+    }
+
     const calculatedScale = Math.round((refinedSize / veoBase.size) * 100) / 100;
 
     return {
@@ -557,12 +572,40 @@ class BulkVideoQueue {
     this.isPaused = false;
     this.currentProcessingId = null;
 
+    this.strategy = 'auto'; // 'auto' | 'manual'
+    this.customSettings = { gain: 0.6, offsetX: -24, offsetY: -24, sizeScale: 1.0, preset: 'veo' };
+    this.previewFrame = null;
+    this.baseImage = null;
+    this.originalBitmap = null;
+
     this.containerSingle = document.getElementById('video-single-container');
     this.containerBulk = document.getElementById('video-bulk-container');
     this.dropzoneBulk = document.getElementById('bulk-video-dropzone');
     this.inputBulk = document.getElementById('bulk-video-input');
     this.wrapperQueue = document.getElementById('bulk-queue-wrapper');
     this.listQueue = document.getElementById('bulk-queue-list');
+
+    // Bulk Tuner & Sliders elements
+    this.tunerContainer = document.getElementById('bulk-video-tuner-container');
+    this.btnStrategyAuto = document.getElementById('btn-bulk-strategy-auto');
+    this.btnStrategyManual = document.getElementById('btn-bulk-strategy-manual');
+
+    this.mainCanvas = document.getElementById('bulk-video-main-canvas');
+    this.zoomCanvas = document.getElementById('bulk-video-zoom-canvas');
+    this.zoomCleanedCanvas = document.getElementById('bulk-video-zoom-cleaned-canvas');
+
+    this.sliderGain = document.getElementById('slider-bulk-gain');
+    this.sliderScale = document.getElementById('slider-bulk-scale');
+    this.sliderOffsetX = document.getElementById('slider-bulk-offset-x');
+    this.sliderOffsetY = document.getElementById('slider-bulk-offset-y');
+
+    this.lblGain = document.getElementById('lbl-bulk-gain');
+    this.lblScale = document.getElementById('lbl-bulk-scale');
+    this.lblOffsetX = document.getElementById('lbl-bulk-offset-x');
+    this.lblOffsetY = document.getElementById('lbl-bulk-offset-y');
+
+    this.btnResetSliders = document.getElementById('btn-bulk-reset-sliders');
+    this.presetButtons = document.querySelectorAll('#bulk-video-tuner-container .btn-preset[data-preset]');
 
     this.elTotal = document.getElementById('bulk-count-total');
     this.elCompleted = document.getElementById('bulk-count-completed');
@@ -616,6 +659,58 @@ class BulkVideoQueue {
       };
     }
 
+    this.btnStrategyAuto?.addEventListener('click', () => {
+      this.strategy = 'auto';
+      this.btnStrategyAuto.classList.add('active');
+      this.btnStrategyManual?.classList.remove('active');
+      this.render();
+    });
+
+    this.btnStrategyManual?.addEventListener('click', () => {
+      this.strategy = 'manual';
+      this.btnStrategyManual.classList.add('active');
+      this.btnStrategyAuto?.classList.remove('active');
+      this.render();
+    });
+
+    this.presetButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.presetButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const presetKey = btn.dataset.preset;
+        const w = this.previewFrame ? this.previewFrame.width : 720;
+        const h = this.previewFrame ? this.previewFrame.height : 720;
+        const p = getAdaptiveVideoPreset(presetKey, w, h);
+        Object.assign(this.customSettings, p);
+        this.customSettings.preset = presetKey;
+        this.syncSliderInputs();
+        this.renderTuner();
+      });
+    });
+
+    const bindBulkSlider = (element, prop, isFloat = false) => {
+      if (!element) return;
+      element.addEventListener('input', (e) => {
+        this.customSettings[prop] = isFloat ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
+        this.updateSliderLabels();
+        this.renderTuner();
+      });
+    };
+
+    bindBulkSlider(this.sliderGain, 'gain', true);
+    bindBulkSlider(this.sliderScale, 'sizeScale', true);
+    bindBulkSlider(this.sliderOffsetX, 'offsetX', false);
+    bindBulkSlider(this.sliderOffsetY, 'offsetY', false);
+
+    this.btnResetSliders?.addEventListener('click', () => {
+      const w = this.previewFrame ? this.previewFrame.width : 720;
+      const h = this.previewFrame ? this.previewFrame.height : 720;
+      const p = getAdaptiveVideoPreset('veo', w, h);
+      Object.assign(this.customSettings, p);
+      this.syncSliderInputs();
+      this.renderTuner();
+    });
+
     this.btnStart?.addEventListener('click', () => this.start());
     this.btnPause?.addEventListener('click', () => this.pause());
     this.btnDownloadAll?.addEventListener('click', () => this.downloadAll());
@@ -625,9 +720,112 @@ class BulkVideoQueue {
     });
   }
 
+  syncSliderInputs() {
+    if (this.sliderGain) this.sliderGain.value = this.customSettings.gain;
+    if (this.sliderScale) this.sliderScale.value = this.customSettings.sizeScale;
+    if (this.sliderOffsetX) this.sliderOffsetX.value = this.customSettings.offsetX;
+    if (this.sliderOffsetY) this.sliderOffsetY.value = this.customSettings.offsetY;
+    this.updateSliderLabels();
+  }
+
+  updateSliderLabels() {
+    if (this.lblGain) this.lblGain.textContent = `${this.customSettings.gain.toFixed(2)}x`;
+    if (this.lblScale) this.lblScale.textContent = `${this.customSettings.sizeScale.toFixed(2)}x`;
+    if (this.lblOffsetX) this.lblOffsetX.textContent = `${this.customSettings.offsetX}px`;
+    if (this.lblOffsetY) this.lblOffsetY.textContent = `${this.customSettings.offsetY}px`;
+  }
+
+  async loadPreview(file) {
+    try {
+      const videoEngine = await this.getVideoEngine();
+      this.previewFrame = await this.grabPreviewFrame(file);
+      this.baseImage = videoEngine.getVeoWatermark(this.previewFrame.width, this.previewFrame.height);
+      if (this.originalBitmap) this.originalBitmap.close();
+      this.originalBitmap = await createImageBitmap(this.previewFrame.imageData);
+      this.renderTuner();
+    } catch (err) {
+      console.warn('Bulk preview frame load notice:', err);
+    }
+  }
+
+  renderTuner() {
+    if (!this.previewFrame || !this.originalBitmap) return;
+    const { width: w, height: h } = this.previewFrame;
+    const { gain, offsetX, offsetY, sizeScale } = this.customSettings;
+
+    const baseCanvas = this.baseImage;
+    if (!baseCanvas) return;
+
+    const baseW = baseCanvas.width || 120;
+    const baseH = baseCanvas.height || 120;
+    const wmWidth = Math.round(baseW * sizeScale);
+    const wmHeight = Math.round(baseH * sizeScale);
+
+    const refDim = Math.min(w, h);
+    const baseMargin = Math.max(8, Math.round(refDim * 0.02));
+    const wmX = w - wmWidth - baseMargin + offsetX;
+    const wmY = h - wmHeight - baseMargin + offsetY;
+
+    const offscreen = document.createElement('canvas');
+    offscreen.width = w;
+    offscreen.height = h;
+    const octx = offscreen.getContext('2d');
+    octx.drawImage(this.originalBitmap, 0, 0);
+
+    if (window.WatermarkEngine && typeof window.WatermarkEngine.unblend === 'function') {
+      window.WatermarkEngine.unblend(octx, baseCanvas, wmX, wmY, wmWidth, wmHeight, gain);
+    }
+
+    if (this.mainCanvas) {
+      const maxDisplayW = 680;
+      const displayScale = Math.min(1, maxDisplayW / w);
+      this.mainCanvas.width = Math.round(w * displayScale);
+      this.mainCanvas.height = Math.round(h * displayScale);
+      const mctx = this.mainCanvas.getContext('2d');
+      mctx.drawImage(offscreen, 0, 0, this.mainCanvas.width, this.mainCanvas.height);
+      mctx.strokeStyle = '#6366f1';
+      mctx.lineWidth = 2;
+      mctx.strokeRect(wmX * displayScale, wmY * displayScale, wmWidth * displayScale, wmHeight * displayScale);
+    }
+
+    const roiMargin = Math.max(16, Math.round(Math.max(wmWidth, wmHeight) * 0.35));
+    const roi = {
+      x: Math.max(0, wmX - roiMargin),
+      y: Math.max(0, wmY - roiMargin),
+      width: Math.min(w - Math.max(0, wmX - roiMargin), wmWidth + roiMargin * 2),
+      height: Math.min(h - Math.max(0, wmY - roiMargin), wmHeight + roiMargin * 2)
+    };
+
+    if (this.zoomCanvas) {
+      const zctx = this.zoomCanvas.getContext('2d');
+      zctx.imageSmoothingEnabled = false;
+      zctx.clearRect(0, 0, this.zoomCanvas.width, this.zoomCanvas.height);
+      zctx.drawImage(this.originalBitmap, roi.x, roi.y, roi.width, roi.height, 0, 0, this.zoomCanvas.width, this.zoomCanvas.height);
+      const sx = this.zoomCanvas.width / roi.width;
+      const sy = this.zoomCanvas.height / roi.height;
+      zctx.strokeStyle = '#2563eb';
+      zctx.lineWidth = 2;
+      zctx.strokeRect((wmX - roi.x) * sx, (wmY - roi.y) * sy, wmWidth * sx, wmHeight * sy);
+    }
+
+    if (this.zoomCleanedCanvas) {
+      const zctx = this.zoomCleanedCanvas.getContext('2d');
+      zctx.imageSmoothingEnabled = false;
+      zctx.clearRect(0, 0, this.zoomCleanedCanvas.width, this.zoomCleanedCanvas.height);
+      zctx.drawImage(offscreen, roi.x, roi.y, roi.width, roi.height, 0, 0, this.zoomCleanedCanvas.width, this.zoomCleanedCanvas.height);
+      const sx = this.zoomCleanedCanvas.width / roi.width;
+      const sy = this.zoomCleanedCanvas.height / roi.height;
+      zctx.strokeStyle = '#16a34a';
+      zctx.lineWidth = 2;
+      zctx.strokeRect((wmX - roi.x) * sx, (wmY - roi.y) * sy, wmWidth * sx, wmHeight * sy);
+    }
+  }
+
   addFiles(fileList) {
     const validFiles = Array.from(fileList).filter(f => f.type.startsWith('video/'));
     if (!validFiles.length) return;
+
+    const wasEmpty = this.queue.length === 0;
 
     for (const file of validFiles) {
       const id = 'vid_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -639,14 +837,20 @@ class BulkVideoQueue {
         formattedSize: formatBytes(file.size),
         status: 'queued',
         progress: 0,
-        settings: { gain: 0.6, offsetX: -24, offsetY: -24, sizeScale: 1 },
-        detectedName: 'Gemini Omni & Flow (Adaptive)',
+        settings: { ...this.customSettings },
+        detectedName: this.strategy === 'manual' ? 'Custom Tuned Settings' : 'Adaptive Auto-Detect',
         result: null,
         errorMsg: ''
       });
     }
 
     if (this.wrapperQueue) this.wrapperQueue.classList.remove('hidden');
+    if (this.tunerContainer) this.tunerContainer.classList.remove('hidden');
+
+    if (wasEmpty && typeof this.grabPreviewFrame === 'function') {
+      this.loadPreview(validFiles[0]);
+    }
+
     this.render();
     this.updateStats();
   }
@@ -678,27 +882,36 @@ class BulkVideoQueue {
       this.updateStats();
 
       try {
-        if (!nextItem.detected) {
-          try {
-            const previewFrame = await this.grabPreviewFrame(nextItem.file);
-            const detected = detectVideoWatermarkCandidate(
-              previewFrame.imageData,
-              previewFrame.width,
-              previewFrame.height,
-              videoEngine.sparkleImage
-            );
-            if (detected) {
-              nextItem.settings = {
-                gain: detected.gain,
-                offsetX: detected.offsetX,
-                offsetY: detected.offsetY,
-                sizeScale: detected.sizeScale
-              };
-              nextItem.detectedName = detected.name;
-              nextItem.detected = true;
+        if (this.strategy === 'manual') {
+          nextItem.settings = { ...this.customSettings };
+          nextItem.detectedName = `Custom (${this.customSettings.gain.toFixed(2)}x gain, scale ${this.customSettings.sizeScale.toFixed(2)}x)`;
+        } else {
+          if (!nextItem.detected) {
+            try {
+              const previewFrame = await this.grabPreviewFrame(nextItem.file);
+              const detected = detectVideoWatermarkCandidate(
+                previewFrame.imageData,
+                previewFrame.width,
+                previewFrame.height,
+                videoEngine.sparkleImage
+              );
+              if (detected) {
+                nextItem.settings = {
+                  gain: detected.gain,
+                  offsetX: detected.offsetX,
+                  offsetY: detected.offsetY,
+                  sizeScale: detected.sizeScale
+                };
+                nextItem.detectedName = detected.name;
+                nextItem.detected = true;
+              } else {
+                nextItem.settings = { ...this.customSettings };
+                nextItem.detectedName = 'Adaptive Default';
+              }
+            } catch (detErr) {
+              console.warn(`Watermark detection skipped for ${nextItem.name}:`, detErr);
+              nextItem.settings = { ...this.customSettings };
             }
-          } catch (detErr) {
-            console.warn(`Watermark detection skipped for ${nextItem.name}:`, detErr);
           }
         }
 
@@ -760,6 +973,7 @@ class BulkVideoQueue {
     }
     this.queue = [];
     if (this.wrapperQueue) this.wrapperQueue.classList.add('hidden');
+    if (this.tunerContainer) this.tunerContainer.classList.add('hidden');
     this.render();
     this.updateStats();
   }
@@ -909,7 +1123,7 @@ class BulkVideoQueue {
             </div>
             <div class="bulk-item-meta">
               <span>${item.formattedSize}</span> • 
-              <span class="text-indigo-600">${item.detectedName || 'Gemini Preset'}</span>
+              <span class="text-indigo-600">${this.strategy === 'manual' ? `Custom Settings (${this.customSettings.gain.toFixed(2)}x, scale ${this.customSettings.sizeScale.toFixed(2)}x)` : (item.detectedName || 'Adaptive Auto-Detect')}</span>
             </div>
 
             ${item.status === 'processing' ? `

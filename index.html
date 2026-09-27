@@ -732,6 +732,144 @@
           <input id="bulk-video-input" type="file" accept="video/*" multiple class="hidden" />
         </div>
 
+        <!-- Bulk Video Removal Tuner & Configuration -->
+        <div id="bulk-video-tuner-container" class="tuner-container hidden mt-4">
+          <!-- Strategy Switcher -->
+          <div class="tuner-preset-row">
+            <span class="tuner-preset-label">Removal Mode:</span>
+            <div class="tuner-preset-buttons">
+              <button type="button" class="btn-preset active" id="btn-bulk-strategy-auto">
+                <iconify-icon icon="ph:magic-wand-bold"></iconify-icon> Adaptive Auto-Detect (Per Video)
+              </button>
+              <button type="button" class="btn-preset" id="btn-bulk-strategy-manual">
+                <iconify-icon icon="ph:sliders-horizontal-bold"></iconify-icon> Custom Settings (Apply to All)
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Sample Preview of First Queued Video -->
+          <div id="bulk-video-preview-row" class="tuner-preview-row mt-3">
+            <div class="tuner-canvas-box main-box">
+              <span class="canvas-title">
+                <iconify-icon icon="ph:frame-corners" width="14"></iconify-icon>
+                Sample Batch Preview (First Video)
+              </span>
+              <div class="canvas-wrapper">
+                <canvas id="bulk-video-main-canvas"></canvas>
+              </div>
+            </div>
+            <div class="tuner-canvas-box zoom-box">
+              <div class="zoom-card">
+                <span class="canvas-title text-blue-600">
+                  <iconify-icon icon="ph:magnifying-glass-plus" width="14"></iconify-icon>
+                  Zoomed Original
+                </span>
+                <div class="canvas-wrapper">
+                  <canvas id="bulk-video-zoom-canvas" width="200" height="200"></canvas>
+                </div>
+              </div>
+              <div class="zoom-card">
+                <span class="canvas-title text-green-600">
+                  <iconify-icon icon="ph:check-circle" width="14"></iconify-icon>
+                  Zoomed Cleaned
+                </span>
+                <div class="canvas-wrapper">
+                  <canvas id="bulk-video-zoom-cleaned-canvas" width="200" height="200"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Select Video Model Presets -->
+          <div class="tuner-preset-row mt-3">
+            <span class="tuner-preset-label">Model Preset:</span>
+            <div class="tuner-preset-buttons">
+              <button type="button" class="btn-preset active" data-preset="veo" id="btn-preset-bulk-omni">
+                <iconify-icon icon="ph:video-camera-bold"></iconify-icon> Gemini Omni &amp; Flow (Adaptive)
+              </button>
+              <button type="button" class="btn-preset" data-preset="corner" id="btn-preset-bulk-veo">
+                <iconify-icon icon="ph:corners-out"></iconify-icon> Veo (Corner)
+              </button>
+              <button type="button" class="btn-preset" data-preset="sparkle" id="btn-preset-bulk-sparkle">
+                <iconify-icon icon="ph:sparkle-bold"></iconify-icon> Standard Sparkle
+              </button>
+            </div>
+          </div>
+
+          <!-- Tuner Sliders with - / + step buttons -->
+          <div class="tuner-sliders mt-2">
+            <div class="slider-group">
+              <div class="tuner-slider-label">
+                <span>Strength (Gain)</span>
+                <span id="lbl-bulk-gain">0.60x</span>
+              </div>
+              <div class="slider-control-row">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-gain" data-dir="-1" title="Decrease Gain" aria-label="Decrease Gain">
+                  <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                </button>
+                <input type="range" id="slider-bulk-gain" min="0.1" max="3" step="0.05" value="0.6" />
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-gain" data-dir="1" title="Increase Gain" aria-label="Increase Gain">
+                  <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="slider-group">
+              <div class="tuner-slider-label">
+                <span>Size Scale</span>
+                <span id="lbl-bulk-scale">1.00x</span>
+              </div>
+              <div class="slider-control-row">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-scale" data-dir="-1" title="Decrease Size Scale" aria-label="Decrease Size Scale">
+                  <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                </button>
+                <input type="range" id="slider-bulk-scale" min="0.5" max="2" step="0.05" value="1.0" />
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-scale" data-dir="1" title="Increase Size Scale" aria-label="Increase Size Scale">
+                  <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="slider-group">
+              <div class="tuner-slider-label">
+                <span>Position X</span>
+                <span id="lbl-bulk-offset-x">-24px</span>
+              </div>
+              <div class="slider-control-row">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-x" data-dir="-1" title="Decrease Position X" aria-label="Decrease Position X">
+                  <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                </button>
+                <input type="range" id="slider-bulk-offset-x" min="-150" max="150" step="1" value="-24" />
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-x" data-dir="1" title="Increase Position X" aria-label="Increase Position X">
+                  <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="slider-group">
+              <div class="tuner-slider-label">
+                <span>Position Y</span>
+                <span id="lbl-bulk-offset-y">-24px</span>
+              </div>
+              <div class="slider-control-row">
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-y" data-dir="-1" title="Decrease Position Y" aria-label="Decrease Position Y">
+                  <iconify-icon icon="ph:minus-bold"></iconify-icon>
+                </button>
+                <input type="range" id="slider-bulk-offset-y" min="-150" max="150" step="1" value="-24" />
+                <button type="button" class="btn-slider-step" data-target="slider-bulk-offset-y" data-dir="1" title="Increase Position Y" aria-label="Increase Position Y">
+                  <iconify-icon icon="ph:plus-bold"></iconify-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tuner-actions">
+            <button type="button" id="btn-bulk-reset-sliders" class="btn btn-secondary text-xs">
+              <iconify-icon icon="ph:arrow-counter-clockwise"></iconify-icon> Reset Sliders
+            </button>
+          </div>
+        </div>
+
         <!-- Bulk Queue Section -->
         <div id="bulk-queue-wrapper" class="bulk-queue-wrapper hidden mt-4">
           <div class="bulk-header-card">
