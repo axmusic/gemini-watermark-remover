@@ -41,6 +41,7 @@ $$\text{Original} = \frac{\text{Watermarked} - (\text{Logo} \times \alpha)}{1 - 
 - 🔒 **100% Private & Client-Side:** Files never leave your device. All rendering is handled locally in your browser via HTML5 Canvas and WebCodecs.
 - 🖼️ **Gemini & Nano Banana Image Support:** Clean images (PNG, JPG, WebP) with instant high-resolution lossless PNG export.
 - 🎬 **Gemini Omni, Google Flow & Veo 3 Video Support:** Fast frame-by-frame processing with MP4 export while preserving original audio tracks.
+- 📦 **Bulk Video Processing:** Queue and batch process multiple Gemini & Veo videos simultaneously with real-time per-file progress tracking and batch download.
 - 🎛️ **Live Tuner & Model Presets:** Quick-select model presets for Nano Banana, Gemini Omni, Flow, and Veo alongside real-time sliders and dual zoomed comparison views.
 - ⚡ **Zero Quality Loss:** Restores exact pixel colors without blurry inpainting.
 - 📱 **Fully Responsive:** Beautiful, clean, modern UI optimized for desktop, tablet, and mobile browsers.

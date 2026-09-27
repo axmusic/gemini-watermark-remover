@@ -1,29 +1,8 @@
-// ── Direct Link Configuration (Monetag) ──
-const MONETAG_DIRECT_LINK = 'https://omg10.com/4/11542046';
-const MONETAG_EXPORT_DIRECT_LINK = 'https://omg10.com/4/11584190';
-
-function handleDownloadAd() {
-  // Open Monetag Direct Link
-  if (MONETAG_DIRECT_LINK) {
-    try {
-      window.open(MONETAG_DIRECT_LINK, '_blank');
-    } catch (e) {
-      console.error('Failed to open Monetag direct link:', e);
-    }
-  }
-}
+// ── Direct Link Configuration ──
+function handleDownloadAd() { }
 window.handleDownloadAd = handleDownloadAd;
 
-function handleExportAd() {
-  // Open Monetag Export Direct Link
-  if (MONETAG_EXPORT_DIRECT_LINK) {
-    try {
-      window.open(MONETAG_EXPORT_DIRECT_LINK, '_blank');
-    } catch (e) {
-      console.error('Failed to open Monetag export direct link:', e);
-    }
-  }
-}
+function handleExportAd() { }
 window.handleExportAd = handleExportAd;
 
 // ── 1. Engine Core (alphaMap, blendModes, geometry, tuner) ──
@@ -1393,8 +1372,6 @@ function initImageRemover() {
   btnExport?.addEventListener('click', async () => {
     if (!currentFile || !watermarkEngine || !currentPreviewFrame) return;
 
-    handleExportAd();
-
     tunerContainer.classList.add('hidden');
     resultsArea.classList.add('hidden');
 
@@ -1431,7 +1408,7 @@ function initImageRemover() {
             </div>
           </div>
           <div class="mt-4 text-center">
-            <a href="${url}" download="clean_${currentFile.name}" class="btn btn-primary" onclick="handleDownloadAd()">
+            <a href="${url}" download="clean_${currentFile.name}" class="btn btn-primary">
               <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
               Download Cleaned PNG
             </a>
@@ -1445,6 +1422,422 @@ function initImageRemover() {
       alert('Error exporting image: ' + err.message);
     }
   });
+}
+
+function formatBytes(bytes, decimals = 1) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+// ── Bulk Video Queue Processor ──
+class BulkVideoQueue {
+  constructor(getVideoEngineFn, grabPreviewFrameFn) {
+    this.getVideoEngine = getVideoEngineFn;
+    this.grabPreviewFrame = grabPreviewFrameFn;
+    this.queue = [];
+    this.isProcessing = false;
+    this.isPaused = false;
+    this.currentProcessingId = null;
+
+    this.containerSingle = document.getElementById('video-single-container');
+    this.containerBulk = document.getElementById('video-bulk-container');
+    this.dropzoneBulk = document.getElementById('bulk-video-dropzone');
+    this.inputBulk = document.getElementById('bulk-video-input');
+    this.wrapperQueue = document.getElementById('bulk-queue-wrapper');
+    this.listQueue = document.getElementById('bulk-queue-list');
+
+    this.elTotal = document.getElementById('bulk-count-total');
+    this.elCompleted = document.getElementById('bulk-count-completed');
+    this.elProcessing = document.getElementById('bulk-count-processing');
+    this.elQueued = document.getElementById('bulk-count-queued');
+
+    this.elOverallProgressContainer = document.getElementById('bulk-overall-progress-container');
+    this.elOverallProgressBar = document.getElementById('bulk-overall-progress-bar');
+    this.elOverallStatusText = document.getElementById('bulk-overall-status-text');
+    this.elOverallPercentText = document.getElementById('bulk-overall-percent-text');
+
+    this.btnStart = document.getElementById('btn-bulk-start');
+    this.btnPause = document.getElementById('btn-bulk-pause');
+    this.btnDownloadAll = document.getElementById('btn-bulk-download-all');
+    this.btnClear = document.getElementById('btn-bulk-clear');
+    this.btnAddMore = document.getElementById('btn-bulk-add-more');
+
+    this.initEvents();
+  }
+
+  initEvents() {
+    if (this.dropzoneBulk) {
+      this.dropzoneBulk.onclick = () => {
+        if (this.inputBulk) this.inputBulk.click();
+      };
+
+      this.dropzoneBulk.ondragover = (e) => {
+        e.preventDefault();
+        this.dropzoneBulk.classList.add('drag-over');
+      };
+
+      this.dropzoneBulk.ondragleave = () => {
+        this.dropzoneBulk.classList.remove('drag-over');
+      };
+
+      this.dropzoneBulk.ondrop = (e) => {
+        e.preventDefault();
+        this.dropzoneBulk.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) {
+          this.addFiles(e.dataTransfer.files);
+        }
+      };
+    }
+
+    if (this.inputBulk) {
+      this.inputBulk.onchange = (e) => {
+        if (e.target.files.length) {
+          this.addFiles(e.target.files);
+        }
+        this.inputBulk.value = '';
+      };
+    }
+
+    this.btnStart?.addEventListener('click', () => this.start());
+    this.btnPause?.addEventListener('click', () => this.pause());
+    this.btnDownloadAll?.addEventListener('click', () => this.downloadAll());
+    this.btnClear?.addEventListener('click', () => this.clear());
+    this.btnAddMore?.addEventListener('click', () => {
+      if (this.inputBulk) this.inputBulk.click();
+    });
+  }
+
+  addFiles(fileList) {
+    const validFiles = Array.from(fileList).filter(f => f.type.startsWith('video/'));
+    if (!validFiles.length) return;
+
+    for (const file of validFiles) {
+      const id = 'vid_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+      this.queue.push({
+        id,
+        file,
+        name: file.name,
+        size: file.size,
+        formattedSize: formatBytes(file.size),
+        status: 'queued',
+        progress: 0,
+        settings: { gain: 0.6, offsetX: -24, offsetY: -24, sizeScale: 1 },
+        detectedName: 'Gemini Omni & Flow (Adaptive)',
+        result: null,
+        errorMsg: ''
+      });
+    }
+
+    if (this.wrapperQueue) this.wrapperQueue.classList.remove('hidden');
+    this.render();
+    this.updateStats();
+  }
+
+  async start() {
+    if (this.isProcessing) return;
+    this.isProcessing = true;
+    this.isPaused = false;
+    this.updateStats();
+
+    let videoEngine;
+    try {
+      videoEngine = await this.getVideoEngine();
+    } catch (e) {
+      alert('Could not initialize video processing engine: ' + e.message);
+      this.isProcessing = false;
+      this.updateStats();
+      return;
+    }
+
+    while (this.isProcessing && !this.isPaused) {
+      const nextItem = this.queue.find(item => item.status === 'queued');
+      if (!nextItem) break;
+
+      this.currentProcessingId = nextItem.id;
+      nextItem.status = 'processing';
+      nextItem.progress = 0;
+      this.renderItem(nextItem.id);
+      this.updateStats();
+
+      try {
+        if (!nextItem.detected) {
+          try {
+            const previewFrame = await this.grabPreviewFrame(nextItem.file);
+            const detected = detectVideoWatermarkCandidate(
+              previewFrame.imageData,
+              previewFrame.width,
+              previewFrame.height,
+              videoEngine.sparkleImage
+            );
+            if (detected) {
+              nextItem.settings = {
+                gain: detected.gain,
+                offsetX: detected.offsetX,
+                offsetY: detected.offsetY,
+                sizeScale: detected.sizeScale
+              };
+              nextItem.detectedName = detected.name;
+              nextItem.detected = true;
+            }
+          } catch (detErr) {
+            console.warn(`Watermark detection skipped for ${nextItem.name}:`, detErr);
+          }
+        }
+
+        const res = await videoEngine.process(nextItem.file, {
+          ...nextItem.settings,
+          onProgress: ({ progress }) => {
+            nextItem.progress = Math.round(progress * 100);
+            this.renderItemProgress(nextItem.id);
+            this.updateStats();
+          }
+        });
+
+        nextItem.status = 'completed';
+        nextItem.progress = 100;
+        nextItem.result = res;
+      } catch (err) {
+        console.error(`Bulk processing failed for ${nextItem.name}:`, err);
+        nextItem.status = 'error';
+        nextItem.errorMsg = err.message || 'Video processing failed';
+      }
+
+      this.renderItem(nextItem.id);
+      this.updateStats();
+    }
+
+    this.isProcessing = false;
+    this.currentProcessingId = null;
+    this.updateStats();
+  }
+
+  pause() {
+    this.isPaused = true;
+    this.isProcessing = false;
+    this.updateStats();
+  }
+
+  removeItem(id) {
+    const idx = this.queue.findIndex(i => i.id === id);
+    if (idx !== -1) {
+      const item = this.queue[idx];
+      if (item.result && item.result.url) {
+        URL.revokeObjectURL(item.result.url);
+      }
+      this.queue.splice(idx, 1);
+      if (this.queue.length === 0 && this.wrapperQueue) {
+        this.wrapperQueue.classList.add('hidden');
+      }
+      this.render();
+      this.updateStats();
+    }
+  }
+
+  clear() {
+    this.pause();
+    for (const item of this.queue) {
+      if (item.result && item.result.url) {
+        URL.revokeObjectURL(item.result.url);
+      }
+    }
+    this.queue = [];
+    if (this.wrapperQueue) this.wrapperQueue.classList.add('hidden');
+    this.render();
+    this.updateStats();
+  }
+
+  downloadAll() {
+    const completedItems = this.queue.filter(i => i.status === 'completed' && i.result?.url);
+    if (!completedItems.length) return;
+
+    completedItems.forEach((item, index) => {
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = item.result.url;
+        a.download = `clean_${item.name.replace(/\.[^/.]+$/, '')}.mp4`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }, index * 400);
+    });
+  }
+
+  updateStats() {
+    const total = this.queue.length;
+    const completed = this.queue.filter(i => i.status === 'completed').length;
+    const processing = this.queue.filter(i => i.status === 'processing').length;
+    const queued = this.queue.filter(i => i.status === 'queued').length;
+
+    if (this.elTotal) this.elTotal.textContent = total;
+    if (this.elCompleted) this.elCompleted.textContent = completed;
+    if (this.elProcessing) this.elProcessing.textContent = processing;
+    if (this.elQueued) this.elQueued.textContent = queued;
+
+    if (this.btnStart && this.btnPause) {
+      if (this.isProcessing) {
+        this.btnStart.classList.add('hidden');
+        this.btnPause.classList.remove('hidden');
+      } else {
+        this.btnStart.classList.remove('hidden');
+        this.btnPause.classList.add('hidden');
+        this.btnStart.disabled = queued === 0;
+      }
+    }
+
+    if (this.btnDownloadAll) {
+      if (completed > 0) {
+        this.btnDownloadAll.classList.remove('hidden');
+      } else {
+        this.btnDownloadAll.classList.add('hidden');
+      }
+    }
+
+    if (this.elOverallProgressContainer) {
+      if (this.isProcessing || completed > 0) {
+        this.elOverallProgressContainer.classList.remove('hidden');
+        let overallPct = 0;
+        if (total > 0) {
+          const sumProgress = this.queue.reduce((acc, item) => {
+            if (item.status === 'completed') return acc + 100;
+            if (item.status === 'processing') return acc + item.progress;
+            return acc;
+          }, 0);
+          overallPct = Math.round(sumProgress / total);
+        }
+        if (this.elOverallProgressBar) this.elOverallProgressBar.style.width = `${overallPct}%`;
+        if (this.elOverallPercentText) this.elOverallPercentText.textContent = `${overallPct}%`;
+        if (this.elOverallStatusText) {
+          if (completed === total && total > 0) {
+            this.elOverallStatusText.textContent = '🎉 All Videos Processed Successfully!';
+          } else if (this.isProcessing) {
+            this.elOverallStatusText.textContent = `Processing Video (${completed + 1} of ${total})...`;
+          } else {
+            this.elOverallStatusText.textContent = 'Batch Paused';
+          }
+        }
+      } else {
+        this.elOverallProgressContainer.classList.add('hidden');
+      }
+    }
+  }
+
+  renderItemProgress(id) {
+    const item = this.queue.find(i => i.id === id);
+    if (!item) return;
+    const itemEl = document.getElementById(`bulk-item-${id}`);
+    if (!itemEl) return;
+
+    const barEl = itemEl.querySelector('.bulk-item-progress-bar-fill');
+    const textEl = itemEl.querySelector('.bulk-item-progress-text');
+    if (barEl) barEl.style.width = `${item.progress}%`;
+    if (textEl) textEl.textContent = `${item.progress}%`;
+  }
+
+  renderItem(id) {
+    const item = this.queue.find(i => i.id === id);
+    if (!item) return;
+
+    const oldEl = document.getElementById(`bulk-item-${id}`);
+    const newHtml = this.getItemHtml(item);
+    if (oldEl) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = newHtml;
+      const newChild = tempDiv.firstElementChild;
+      oldEl.replaceWith(newChild);
+      this.bindItemEvents(newChild, item);
+    } else if (this.listQueue) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = newHtml;
+      const newChild = tempDiv.firstElementChild;
+      this.listQueue.appendChild(newChild);
+      this.bindItemEvents(newChild, item);
+    }
+  }
+
+  render() {
+    if (!this.listQueue) return;
+    this.listQueue.innerHTML = this.queue.map(item => this.getItemHtml(item)).join('');
+    this.queue.forEach(item => {
+      const itemEl = document.getElementById(`bulk-item-${item.id}`);
+      if (itemEl) this.bindItemEvents(itemEl, item);
+    });
+  }
+
+  getItemHtml(item) {
+    let badgeClass = 'badge-queued';
+    let badgeText = 'Queued';
+
+    if (item.status === 'processing') {
+      badgeClass = 'badge-processing';
+      badgeText = `Processing (${item.progress}%)`;
+    } else if (item.status === 'completed') {
+      badgeClass = 'badge-completed';
+      badgeText = 'Completed';
+    } else if (item.status === 'error') {
+      badgeClass = 'badge-error';
+      badgeText = 'Failed';
+    }
+
+    return `
+      <div id="bulk-item-${item.id}" class="bulk-item-card status-${item.status}">
+        <div class="bulk-item-main">
+          <div class="bulk-item-icon">
+            <iconify-icon icon="${item.status === 'completed' ? 'ph:check-circle-fill' : 'ph:video-camera-bold'}" width="24"></iconify-icon>
+          </div>
+          <div class="bulk-item-info">
+            <div class="bulk-item-title-row">
+              <span class="bulk-item-name" title="${item.name}">${item.name}</span>
+              <span class="bulk-item-badge ${badgeClass}">${badgeText}</span>
+            </div>
+            <div class="bulk-item-meta">
+              <span>${item.formattedSize}</span> • 
+              <span class="text-indigo-600">${item.detectedName || 'Gemini Preset'}</span>
+            </div>
+
+            ${item.status === 'processing' ? `
+              <div class="bulk-item-progress-box mt-2">
+                <div class="progress-bar-container mini">
+                  <div class="progress-bar-fill bulk-item-progress-bar-fill" style="width: ${item.progress}%"></div>
+                </div>
+                <span class="bulk-item-progress-text text-xs mt-1">${item.progress}%</span>
+              </div>
+            ` : ''}
+
+            ${item.status === 'error' ? `
+              <p class="bulk-item-error-msg mt-1 text-xs text-red-600">${item.errorMsg}</p>
+            ` : ''}
+          </div>
+        </div>
+
+        <div class="bulk-item-actions">
+          ${item.status === 'completed' && item.result?.url ? `
+            <a href="${item.result.url}" download="clean_${item.name.replace(/\.[^/.]+$/, '')}.mp4" class="btn btn-primary btn-sm">
+              <iconify-icon icon="ph:download-simple-bold" width="14"></iconify-icon>
+              <span>Download MP4</span>
+            </a>
+          ` : ''}
+
+          <button type="button" class="btn-remove-item" data-id="${item.id}" title="Remove from queue">
+            <iconify-icon icon="ph:x-bold" width="16"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  bindItemEvents(itemEl, item) {
+    const btnRemove = itemEl.querySelector('.btn-remove-item');
+    if (btnRemove) {
+      btnRemove.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.removeItem(item.id);
+      });
+    }
+  }
 }
 
 function initVideoRemover() {
@@ -1473,6 +1866,12 @@ function initVideoRemover() {
   const btnResetSliders = document.getElementById('btn-video-reset-sliders');
   const btnExport = document.getElementById('btn-video-export');
 
+  // Video Mode Switcher Buttons
+  const btnModeSingle = document.getElementById('btn-video-mode-single');
+  const btnModeBulk = document.getElementById('btn-video-mode-bulk');
+  const containerSingle = document.getElementById('video-single-container');
+  const containerBulk = document.getElementById('video-bulk-container');
+
   if (!dropzone || !fileInput) return;
 
   let currentFile = null;
@@ -1483,6 +1882,32 @@ function initVideoRemover() {
   let isProcessing = false;
 
   const currentSettings = { gain: 0.6, offsetX: -24, offsetY: -24, sizeScale: 1 };
+
+  const getOrInitVideoEngine = async () => {
+    if (!videoEngine) {
+      videoEngine = await VideoWatermarkEngine.create();
+    }
+    return videoEngine;
+  };
+
+  const bulkProcessor = new BulkVideoQueue(getOrInitVideoEngine, grabPreviewFrame);
+
+  function switchVideoMode(mode) {
+    if (mode === 'single') {
+      btnModeSingle?.classList.add('active');
+      btnModeBulk?.classList.remove('active');
+      containerSingle?.classList.remove('hidden');
+      containerBulk?.classList.add('hidden');
+    } else {
+      btnModeBulk?.classList.add('active');
+      btnModeSingle?.classList.remove('active');
+      containerBulk?.classList.remove('hidden');
+      containerSingle?.classList.add('hidden');
+    }
+  }
+
+  btnModeSingle?.addEventListener('click', () => switchVideoMode('single'));
+  btnModeBulk?.addEventListener('click', () => switchVideoMode('bulk'));
 
   function setDropzoneLoading(loading, message = 'Extracting best frame...') {
     isProcessing = loading;
@@ -1502,7 +1927,7 @@ function initVideoRemover() {
           <iconify-icon icon="ph:video-bold"></iconify-icon>
         </div>
         <p class="dropzone-title">Upload or drag a Gemini Veo 3 video</p>
-        <p class="dropzone-sub">Supports MP4, WebM, MOV</p>
+        <p class="dropzone-sub">Supports MP4, WebM, MOV (Drop multiple files for Bulk Mode)</p>
       `;
     }
   }
@@ -1624,12 +2049,22 @@ function initVideoRemover() {
     e.preventDefault();
     dropzone.classList.remove('drag-over');
     if (isProcessing) return;
-    if (e.dataTransfer.files.length) handleVideoFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files.length > 1) {
+      switchVideoMode('bulk');
+      bulkProcessor.addFiles(e.dataTransfer.files);
+    } else if (e.dataTransfer.files.length === 1) {
+      handleVideoFile(e.dataTransfer.files[0]);
+    }
   };
 
   fileInput.onchange = (e) => {
     if (isProcessing) return;
-    if (e.target.files.length) handleVideoFile(e.target.files[0]);
+    if (e.target.files.length > 1) {
+      switchVideoMode('bulk');
+      bulkProcessor.addFiles(e.target.files);
+    } else if (e.target.files.length === 1) {
+      handleVideoFile(e.target.files[0]);
+    }
     fileInput.value = '';
   };
 
@@ -1842,17 +2277,14 @@ function initVideoRemover() {
     tunerContainer.classList.add('hidden');
 
     try {
-      if (!videoEngine) {
-        videoEngine = await VideoWatermarkEngine.create();
-      }
+      const engine = await getOrInitVideoEngine();
 
       currentPreviewFrame = await grabPreviewFrame(file);
-      currentBase = videoEngine.getVeoWatermark(currentPreviewFrame.width, currentPreviewFrame.height);
+      currentBase = engine.getVeoWatermark(currentPreviewFrame.width, currentPreviewFrame.height);
       if (currentOriginalBitmap) currentOriginalBitmap.close();
       currentOriginalBitmap = await createImageBitmap(currentPreviewFrame.imageData);
 
-      // Run Auto-Detection on video preview frame
-      currentDetected = detectVideoWatermarkCandidate(currentPreviewFrame.imageData, currentPreviewFrame.width, currentPreviewFrame.height, videoEngine.sparkleImage);
+      currentDetected = detectVideoWatermarkCandidate(currentPreviewFrame.imageData, currentPreviewFrame.width, currentPreviewFrame.height, engine.sparkleImage);
 
       tunerContainer.classList.remove('hidden');
       applyAutoSettings();
@@ -1866,9 +2298,7 @@ function initVideoRemover() {
   }
 
   btnExport?.addEventListener('click', async () => {
-    if (!currentFile || !videoEngine) return;
-
-    handleExportAd();
+    if (!currentFile) return;
 
     tunerContainer.classList.add('hidden');
     statusContainer.classList.remove('hidden');
@@ -1878,7 +2308,8 @@ function initVideoRemover() {
     smoothScrollTo(statusContainer);
 
     try {
-      const res = await videoEngine.process(currentFile, {
+      const engine = await getOrInitVideoEngine();
+      const res = await engine.process(currentFile, {
         ...currentSettings,
         onProgress: ({ progress }) => {
           const pct = Math.round(progress * 100);
@@ -1904,7 +2335,7 @@ function initVideoRemover() {
             </div>
           </div>
           <div class="mt-4 text-center">
-            <a href="${res.url}" download="clean_${currentFile.name}" class="btn btn-primary" onclick="handleDownloadAd()">
+            <a href="${res.url}" download="clean_${currentFile.name}" class="btn btn-primary">
               <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
               Download Cleaned Video MP4
             </a>

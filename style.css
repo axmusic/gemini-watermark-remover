@@ -2579,3 +2579,327 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Video Mode Switcher (Single vs Bulk) ── */
+.video-mode-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  padding: 0.35rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  width: fit-content;
+}
+
+.btn-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-mode:hover {
+  color: var(--text-main);
+}
+
+.btn-mode.active {
+  background: #ffffff;
+  color: var(--brand-primary);
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+}
+
+.mode-badge-new {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* ── Bulk Video Queue UI ── */
+.bulk-dropzone {
+  border-style: dashed;
+  border-color: #a5b4fc;
+  background: linear-gradient(180deg, rgba(245, 247, 255, 0.6) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.bulk-dropzone:hover {
+  border-color: var(--brand-primary);
+  background: rgba(99, 102, 241, 0.04);
+}
+
+.bulk-header-card {
+  background: #ffffff;
+  border: 1px solid var(--bg-card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.bulk-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.bulk-stat-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.bulk-stat-pill .stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.bulk-stat-pill strong {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.bulk-stat-pill.completed strong {
+  color: #16a34a;
+}
+
+.bulk-stat-pill.processing strong {
+  color: #2563eb;
+}
+
+.bulk-stat-pill.queued strong {
+  color: #d97706;
+}
+
+.bulk-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.bulk-action-left,
+.bulk-action-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+  transition: all var(--transition-fast);
+}
+
+.btn-success:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35);
+}
+
+.text-danger {
+  color: #dc2626 !important;
+}
+
+.text-danger:hover {
+  background: #fef2f2 !important;
+}
+
+/* ── Queue List Items ── */
+.bulk-queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bulk-item-card {
+  background: #ffffff;
+  border: 1px solid var(--bg-card-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all var(--transition-fast);
+}
+
+.bulk-item-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-sm);
+}
+
+.bulk-item-card.status-processing {
+  border-color: #93c5fd;
+  background: #f0f9ff;
+}
+
+.bulk-item-card.status-completed {
+  border-color: #bbf7d0;
+}
+
+.bulk-item-card.status-error {
+  border-color: #fca5a5;
+  background: #fff5f5;
+}
+
+.bulk-item-main {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.bulk-item-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: #f1f5f9;
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.status-completed .bulk-item-icon {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-processing .bulk-item-icon {
+  background: #dbeafe;
+  color: #2563eb;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.bulk-item-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.bulk-item-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.bulk-item-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bulk-item-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.badge-queued {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.badge-processing {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.badge-completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-error {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.bulk-item-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.bulk-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-remove-item {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 0.35rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-remove-item:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.progress-bar-container.mini {
+  height: 6px;
+  border-radius: 3px;
+  background: #e2e8f0;
+}
+
+@media (max-width: 640px) {
+  .bulk-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .bulk-item-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+}

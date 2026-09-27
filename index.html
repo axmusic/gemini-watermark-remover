@@ -550,117 +550,213 @@
 
     <!-- Video Removal Panel -->
     <section id="panel-video" class="card hidden">
-      <div id="video-dropzone" class="dropzone">
-        <div class="dropzone-icon">
-          <iconify-icon icon="ph:video-bold"></iconify-icon>
-        </div>
-        <p class="dropzone-title">Upload or drag a Gemini Omni, Google Flow, or Veo video</p>
-        <p class="dropzone-sub">Supports MP4, WebM, MOV</p>
-        <input id="video-input" type="file" accept="video/*" class="hidden" />
+      <!-- Video Mode Switcher (Single Video vs Bulk Processing) -->
+      <div class="video-mode-switcher">
+        <button type="button" class="btn-mode active" id="btn-video-mode-single" data-mode="single">
+          <iconify-icon icon="ph:video-bold" width="18"></iconify-icon>
+          <span>Single Video + Tuner</span>
+        </button>
+        <button type="button" class="btn-mode" id="btn-video-mode-bulk" data-mode="bulk">
+          <iconify-icon icon="ph:files-bold" width="18"></iconify-icon>
+          <span>Bulk Video Processing</span>
+          <span class="mode-badge-new">NEW BATCH</span>
+        </button>
       </div>
 
-      <!-- Video Tuner & Live Preview Container -->
-      <div id="video-tuner-container" class="tuner-container hidden">
-        <div id="video-detect-badge" class="detect-badge hidden"></div>
-        <div class="tuner-preview-row">
-          <div class="tuner-canvas-box main-box">
-            <span class="canvas-title">
-              <iconify-icon icon="ph:frame-corners" width="14"></iconify-icon>
-              Preview (Full Frame)
-            </span>
-            <div class="canvas-wrapper">
-              <canvas id="video-main-canvas"></canvas>
-            </div>
+      <!-- SINGLE VIDEO MODE CONTAINER -->
+      <div id="video-single-container">
+        <div id="video-dropzone" class="dropzone">
+          <div class="dropzone-icon">
+            <iconify-icon icon="ph:video-bold"></iconify-icon>
           </div>
-          <div class="tuner-canvas-box zoom-box">
-            <div class="zoom-card">
-              <span class="canvas-title text-blue-600">
-                <iconify-icon icon="ph:magnifying-glass-plus" width="14"></iconify-icon>
-                Zoomed Original
+          <p class="dropzone-title">Upload or drag a Gemini Omni, Google Flow, or Veo video</p>
+          <p class="dropzone-sub">Supports MP4, WebM, MOV (Drop multiple files to switch to Bulk Mode)</p>
+          <input id="video-input" type="file" accept="video/*" class="hidden" />
+        </div>
+
+        <!-- Video Tuner & Live Preview Container -->
+        <div id="video-tuner-container" class="tuner-container hidden">
+          <div id="video-detect-badge" class="detect-badge hidden"></div>
+          <div class="tuner-preview-row">
+            <div class="tuner-canvas-box main-box">
+              <span class="canvas-title">
+                <iconify-icon icon="ph:frame-corners" width="14"></iconify-icon>
+                Preview (Full Frame)
               </span>
               <div class="canvas-wrapper">
-                <canvas id="video-zoom-canvas" width="200" height="200"></canvas>
+                <canvas id="video-main-canvas"></canvas>
               </div>
             </div>
-            <div class="zoom-card">
-              <span class="canvas-title text-green-600">
-                <iconify-icon icon="ph:check-circle" width="14"></iconify-icon>
-                Zoomed Cleaned
-              </span>
-              <div class="canvas-wrapper">
-                <canvas id="video-zoom-cleaned-canvas" width="200" height="200"></canvas>
+            <div class="tuner-canvas-box zoom-box">
+              <div class="zoom-card">
+                <span class="canvas-title text-blue-600">
+                  <iconify-icon icon="ph:magnifying-glass-plus" width="14"></iconify-icon>
+                  Zoomed Original
+                </span>
+                <div class="canvas-wrapper">
+                  <canvas id="video-zoom-canvas" width="200" height="200"></canvas>
+                </div>
+              </div>
+              <div class="zoom-card">
+                <span class="canvas-title text-green-600">
+                  <iconify-icon icon="ph:check-circle" width="14"></iconify-icon>
+                  Zoomed Cleaned
+                </span>
+                <div class="canvas-wrapper">
+                  <canvas id="video-zoom-cleaned-canvas" width="200" height="200"></canvas>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Quick Select Video Model Presets -->
+          <div class="tuner-preset-row">
+            <span class="tuner-preset-label">Model Preset:</span>
+            <div class="tuner-preset-buttons">
+              <button type="button" class="btn-preset active" data-preset="veo" id="btn-preset-vid-omni">
+                <iconify-icon icon="ph:video-camera-bold"></iconify-icon> Gemini Omni &amp; Flow (Adaptive)
+              </button>
+              <button type="button" class="btn-preset" data-preset="corner" id="btn-preset-vid-veo">
+                <iconify-icon icon="ph:corners-out"></iconify-icon> Veo (Corner)
+              </button>
+              <button type="button" class="btn-preset" data-preset="sparkle" id="btn-preset-vid-sparkle">
+                <iconify-icon icon="ph:sparkle-bold"></iconify-icon> Standard Sparkle
+              </button>
+            </div>
+          </div>
+
+          <div class="tuner-sliders mt-2">
+            <div class="slider-group">
+              <div class="tuner-slider-label">
+                <span>Strength (Gain)</span>
+                <span id="lbl-video-gain">0.60x</span>
+              </div>
+              <input type="range" id="slider-video-gain" min="0.1" max="3" step="0.05" value="0.6" />
+            </div>
+            <div class="slider-group">
+              <div class="tuner-slider-label">
+                <span>Size Scale</span>
+                <span id="lbl-video-scale">1.00x</span>
+              </div>
+              <input type="range" id="slider-video-scale" min="0.5" max="2" step="0.05" value="1.0" />
+            </div>
+            <div class="slider-group">
+              <div class="tuner-slider-label">
+                <span>Position X</span>
+                <span id="lbl-video-offset-x">-24px</span>
+              </div>
+              <input type="range" id="slider-video-offset-x" min="-150" max="150" step="1" value="-24" />
+            </div>
+            <div class="slider-group">
+              <div class="tuner-slider-label">
+                <span>Position Y</span>
+                <span id="lbl-video-offset-y">-24px</span>
+              </div>
+              <input type="range" id="slider-video-offset-y" min="-150" max="150" step="1" value="-24" />
+            </div>
+          </div>
+
+          <div class="tuner-actions">
+            <button id="btn-video-reset-sliders" class="btn btn-secondary text-xs">
+              <iconify-icon icon="ph:arrow-counter-clockwise"></iconify-icon> Reset Sliders
+            </button>
+            <button id="btn-video-export" class="btn btn-primary">
+              <iconify-icon icon="ph:eraser"></iconify-icon> Remove &amp; Export Video MP4
+            </button>
+          </div>
         </div>
 
-        <!-- Quick Select Video Model Presets -->
-        <div class="tuner-preset-row">
-          <span class="tuner-preset-label">Model Preset:</span>
-          <div class="tuner-preset-buttons">
-            <button type="button" class="btn-preset active" data-preset="veo" id="btn-preset-vid-omni">
-              <iconify-icon icon="ph:video-camera-bold"></iconify-icon> Gemini Omni &amp; Flow (Adaptive)
-            </button>
-            <button type="button" class="btn-preset" data-preset="corner" id="btn-preset-vid-veo">
-              <iconify-icon icon="ph:corners-out"></iconify-icon> Veo (Corner)
-            </button>
-            <button type="button" class="btn-preset" data-preset="sparkle" id="btn-preset-vid-sparkle">
-              <iconify-icon icon="ph:sparkle-bold"></iconify-icon> Standard Sparkle
-            </button>
+        <!-- Processing Progress -->
+        <div id="video-status" class="hidden mt-4 text-center">
+          <p class="mb-2">Cleaning &amp; Encoding Video...</p>
+          <div class="progress-bar-container">
+            <div id="video-progress-bar" class="progress-bar-fill"></div>
           </div>
+          <p id="video-progress-text" class="progress-text">0%</p>
         </div>
 
-        <div class="tuner-sliders mt-2">
-          <div class="slider-group">
-            <div class="tuner-slider-label">
-              <span>Strength (Gain)</span>
-              <span id="lbl-video-gain">0.60x</span>
-            </div>
-            <input type="range" id="slider-video-gain" min="0.1" max="3" step="0.05" value="0.6" />
-          </div>
-          <div class="slider-group">
-            <div class="tuner-slider-label">
-              <span>Size Scale</span>
-              <span id="lbl-video-scale">1.00x</span>
-            </div>
-            <input type="range" id="slider-video-scale" min="0.5" max="2" step="0.05" value="1.0" />
-          </div>
-          <div class="slider-group">
-            <div class="tuner-slider-label">
-              <span>Position X</span>
-              <span id="lbl-video-offset-x">-24px</span>
-            </div>
-            <input type="range" id="slider-video-offset-x" min="-150" max="150" step="1" value="-24" />
-          </div>
-          <div class="slider-group">
-            <div class="tuner-slider-label">
-              <span>Position Y</span>
-              <span id="lbl-video-offset-y">-24px</span>
-            </div>
-            <input type="range" id="slider-video-offset-y" min="-150" max="150" step="1" value="-24" />
-          </div>
-        </div>
-
-        <div class="tuner-actions">
-          <button id="btn-video-reset-sliders" class="btn btn-secondary text-xs">
-            <iconify-icon icon="ph:arrow-counter-clockwise"></iconify-icon> Reset Sliders
-          </button>
-          <button id="btn-video-export" class="btn btn-primary">
-            <iconify-icon icon="ph:eraser"></iconify-icon> Remove &amp; Export Video MP4
-          </button>
-        </div>
+        <div id="video-results" class="hidden mt-4"></div>
       </div>
 
-      <!-- Processing Progress -->
-      <div id="video-status" class="hidden mt-4 text-center">
-        <p class="mb-2">Cleaning &amp; Encoding Video...</p>
-        <div class="progress-bar-container">
-          <div id="video-progress-bar" class="progress-bar-fill"></div>
+      <!-- BULK VIDEO BATCH MODE CONTAINER -->
+      <div id="video-bulk-container" class="hidden">
+        <div id="bulk-video-dropzone" class="dropzone bulk-dropzone">
+          <div class="dropzone-icon">
+            <iconify-icon icon="ph:files-bold" width="36"></iconify-icon>
+          </div>
+          <p class="dropzone-title">Upload or drag multiple videos for Bulk Processing</p>
+          <p class="dropzone-sub">Select 2 or more MP4, WebM, or MOV files to process in batch</p>
+          <input id="bulk-video-input" type="file" accept="video/*" multiple class="hidden" />
         </div>
-        <p id="video-progress-text" class="progress-text">0%</p>
-      </div>
 
-      <div id="video-results" class="hidden mt-4"></div>
+        <!-- Bulk Queue Section -->
+        <div id="bulk-queue-wrapper" class="bulk-queue-wrapper hidden mt-4">
+          <div class="bulk-header-card">
+            <!-- Global Stats Overview -->
+            <div class="bulk-stats-row">
+              <div class="bulk-stat-pill">
+                <span class="stat-label">Total Videos</span>
+                <strong id="bulk-count-total">0</strong>
+              </div>
+              <div class="bulk-stat-pill completed">
+                <span class="stat-label">Completed</span>
+                <strong id="bulk-count-completed">0</strong>
+              </div>
+              <div class="bulk-stat-pill processing">
+                <span class="stat-label">Processing</span>
+                <strong id="bulk-count-processing">0</strong>
+              </div>
+              <div class="bulk-stat-pill queued">
+                <span class="stat-label">Queued</span>
+                <strong id="bulk-count-queued">0</strong>
+              </div>
+            </div>
+
+            <!-- Global Overall Batch Progress Bar -->
+            <div id="bulk-overall-progress-container" class="bulk-overall-progress hidden mt-3">
+              <div class="progress-bar-header">
+                <span id="bulk-overall-status-text">Batch Processing Active...</span>
+                <span id="bulk-overall-percent-text">0%</span>
+              </div>
+              <div class="progress-bar-container">
+                <div id="bulk-overall-progress-bar" class="progress-bar-fill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Action Controls Bar -->
+            <div class="bulk-action-bar mt-4">
+              <div class="bulk-action-left">
+                <button type="button" id="btn-bulk-start" class="btn btn-primary">
+                  <iconify-icon icon="ph:play-fill" width="16"></iconify-icon>
+                  <span>Start Bulk Processing</span>
+                </button>
+                <button type="button" id="btn-bulk-pause" class="btn btn-secondary hidden">
+                  <iconify-icon icon="ph:pause-fill" width="16"></iconify-icon>
+                  <span>Pause Processing</span>
+                </button>
+                <button type="button" id="btn-bulk-download-all" class="btn btn-success hidden">
+                  <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
+                  <span>Download All Cleaned MP4s</span>
+                </button>
+              </div>
+
+              <div class="bulk-action-right">
+                <button type="button" id="btn-bulk-add-more" class="btn btn-secondary text-xs">
+                  <iconify-icon icon="ph:plus-bold" width="14"></iconify-icon>
+                  <span>Add More Videos</span>
+                </button>
+                <button type="button" id="btn-bulk-clear" class="btn btn-secondary text-xs text-danger">
+                  <iconify-icon icon="ph:trash-bold" width="14"></iconify-icon>
+                  <span>Clear Queue</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Queue Items List -->
+          <div id="bulk-queue-list" class="bulk-queue-list mt-4"></div>
+        </div>
+      </div>
     </section>
 
     <!-- How It Works Step-by-Step Section -->
