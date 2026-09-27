@@ -1,26 +1,8 @@
-// ── Direct Link Configuration (Monetag) ──
-const MONETAG_DIRECT_LINK = 'https://omg10.com/4/11901314';
-
-function handleDownloadAd() {
-  if (MONETAG_DIRECT_LINK) {
-    try {
-      window.open(MONETAG_DIRECT_LINK, '_blank');
-    } catch (e) {
-      console.error('Failed to open Monetag direct link:', e);
-    }
-  }
-}
+// ── Direct Link Configuration ──
+function handleDownloadAd() { }
 window.handleDownloadAd = handleDownloadAd;
 
-function handleExportAd() {
-  if (MONETAG_DIRECT_LINK) {
-    try {
-      window.open(MONETAG_DIRECT_LINK, '_blank');
-    } catch (e) {
-      console.error('Failed to open Monetag direct link:', e);
-    }
-  }
-}
+function handleExportAd() { }
 window.handleExportAd = handleExportAd;
 
 // ── 1. Engine Core (alphaMap, blendModes, geometry, tuner) ──
@@ -1390,8 +1372,6 @@ function initImageRemover() {
   btnExport?.addEventListener('click', async () => {
     if (!currentFile || !watermarkEngine || !currentPreviewFrame) return;
 
-    handleExportAd();
-
     tunerContainer.classList.add('hidden');
     resultsArea.classList.add('hidden');
 
@@ -1428,7 +1408,7 @@ function initImageRemover() {
             </div>
           </div>
           <div class="mt-4 text-center">
-            <a href="${url}" download="clean_${currentFile.name}" class="btn btn-primary" onclick="handleDownloadAd()">
+            <a href="${url}" download="clean_${currentFile.name}" class="btn btn-primary">
               <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
               Download Cleaned PNG
             </a>
@@ -1674,8 +1654,6 @@ class BulkVideoQueue {
     const completedItems = this.queue.filter(i => i.status === 'completed' && i.result?.url);
     if (!completedItems.length) return;
 
-    handleExportAd();
-
     completedItems.forEach((item, index) => {
       setTimeout(() => {
         const a = document.createElement('a');
@@ -1837,7 +1815,7 @@ class BulkVideoQueue {
 
         <div class="bulk-item-actions">
           ${item.status === 'completed' && item.result?.url ? `
-            <a href="${item.result.url}" download="clean_${item.name.replace(/\.[^/.]+$/, '')}.mp4" class="btn btn-primary btn-sm" onclick="handleDownloadAd()">
+            <a href="${item.result.url}" download="clean_${item.name.replace(/\.[^/.]+$/, '')}.mp4" class="btn btn-primary btn-sm">
               <iconify-icon icon="ph:download-simple-bold" width="14"></iconify-icon>
               <span>Download MP4</span>
             </a>
@@ -2322,8 +2300,6 @@ function initVideoRemover() {
   btnExport?.addEventListener('click', async () => {
     if (!currentFile) return;
 
-    handleExportAd();
-
     tunerContainer.classList.add('hidden');
     statusContainer.classList.remove('hidden');
     resultsArea.classList.add('hidden');
@@ -2359,7 +2335,7 @@ function initVideoRemover() {
             </div>
           </div>
           <div class="mt-4 text-center">
-            <a href="${res.url}" download="clean_${currentFile.name}" class="btn btn-primary" onclick="handleDownloadAd()">
+            <a href="${res.url}" download="clean_${currentFile.name}" class="btn btn-primary">
               <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
               Download Cleaned Video MP4
             </a>
@@ -2379,32 +2355,7 @@ function initVideoRemover() {
 
 // ── Results Screen Promo Card Generator ──
 function getPromoCardHtml(type = 'image') {
-  return `
-    <div class="results-promo-banner" data-auto-favicon="https://ishara-madu.github.io/online-image-converter/">
-      <div class="results-promo-badge-row">
-        <span class="results-promo-tag">
-          Recommended Free Tool
-        </span>
-        <span class="badge-featured">100% Free &amp; Fast</span>
-      </div>
-      <div class="results-promo-body">
-        <div class="results-promo-icon-box">
-          <img src="https://ishara-madu.github.io/online-image-converter/favicon.ico"
-            onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=ishara-madu.github.io&amp;sz=64';"
-            alt="Online Image Converter Favicon"
-            class="tool-favicon-img" width="26" height="26" loading="lazy" />
-        </div>
-        <div class="results-promo-info">
-          <h4 class="results-promo-title">Convert image formats with Online Image Converter</h4>
-          <p class="results-promo-desc">Batch convert your cleaned files to WebP, PNG, JPG, AVIF, or GIF with lossless quality right in your browser.</p>
-        </div>
-        <a href="https://ishara-madu.github.io/online-image-converter/" target="_blank" rel="noopener noreferrer" class="results-promo-btn">
-          <span>Try Image Converter</span>
-          <iconify-icon icon="ph:arrow-square-out-bold" width="16"></iconify-icon>
-        </a>
-      </div>
-    </div>
-  `;
+  return '';
 }
 
 // ── GitHub Star Count Fetcher ──
