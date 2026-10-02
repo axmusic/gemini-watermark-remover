@@ -3691,4 +3691,20 @@ body {
   color: var(--brand-primary);
   border-color: rgba(99, 102, 241, 0.3);
 }
+
+/* ── Custom Last Frame Outro Controls ── */
+#combo-lastframe-controls .adder-mini-dropzone {
+  min-height: 80px;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+#combo-lastframe-thumb {
+  max-width: 90px;
+  max-height: 60px;
+  border-radius: 6px;
+  border: 1px solid var(--bg-card-border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
 

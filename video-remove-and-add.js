@@ -124,11 +124,41 @@ class VideoRemoveAndAddEngine {
     });
   }
 
+  drawLastFrameImage(ctx, canvasWidth, canvasHeight, image, fit = 'cover') {
+    if (!image) return;
+    ctx.save();
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    const imgW = image.naturalWidth || image.width || canvasWidth;
+    const imgH = image.naturalHeight || image.height || canvasHeight;
+
+    if (fit === 'stretch') {
+      ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+    } else if (fit === 'contain') {
+      const scale = Math.min(canvasWidth / imgW, canvasHeight / imgH);
+      const drawW = imgW * scale;
+      const drawH = imgH * scale;
+      const dx = (canvasWidth - drawW) / 2;
+      const dy = (canvasHeight - drawH) / 2;
+      ctx.drawImage(image, dx, dy, drawW, drawH);
+    } else {
+      // 'cover' default: fills canvas while preserving aspect ratio
+      const scale = Math.max(canvasWidth / imgW, canvasHeight / imgH);
+      const drawW = imgW * scale;
+      const drawH = imgH * scale;
+      const dx = (canvasWidth - drawW) / 2;
+      const dy = (canvasHeight - drawH) / 2;
+      ctx.drawImage(image, dx, dy, drawW, drawH);
+    }
+    ctx.restore();
+  }
+
   /**
    * Process video in ONE single pass:
    * 1. Decode video frames once
    * 2. Unblend Gemini watermark pixels mathematically
-   * 3. Draw custom watermark (text or logo) directly onto the cleaned frame
+   * 3. Draw custom watermark (text, logo, or custom last frame image) directly onto frame
    * 4. Encode directly into output MP4 with 100% audio passthrough
    */
   async process(file, removalConfig, adderConfig, logoImg = null, opts = {}) {
@@ -208,10 +238,28 @@ class VideoRemoveAndAddEngine {
 
     await output.start();
 
+    const isOverlayActive = !!(
+      adderConfig &&
+      adderConfig.enabled !== false &&
+      adderConfig.overlayEnabled !== false &&
+      adderConfig.type !== 'none' &&
+      (adderConfig.type === 'text' ? !!adderConfig.text : (adderConfig.type === 'image' && !!logoImg))
+    );
+
+    const lastFrameImg = adderConfig?.lastFrameImg || null;
+    const hasLastFrame = !!(lastFrameImg && adderConfig?.lastFrameEnabled !== false);
+    const lastFrameFit = adderConfig?.lastFrameFit || 'cover';
+    const lastFrameMode = adderConfig?.lastFrameMode || 'replace-1';
+    const lastFrameDuration = Number(adderConfig?.lastFrameDuration) || 1.0;
+
     const fallbackDur = frameRate > 0 ? 1 / frameRate : 1 / 30;
     const sink = new VideoSampleSink(videoTrack);
     let firstTimestamp = null;
     let lastTimestamp = -1;
+
+    let pendingSample = null;
+    let pendingTimestamp = 0;
+    let pendingDur = fallbackDur;
 
     for await (const sample of sink.samples()) {
       if (firstTimestamp === null) firstTimestamp = sample.timestamp;
@@ -221,27 +269,77 @@ class VideoRemoveAndAddEngine {
       const dur = Number.isFinite(sample.duration) && sample.duration > 0 ? sample.duration : fallbackDur;
       lastTimestamp = timestamp;
 
-      // 1. Draw raw source frame
-      sample.draw(ctx, 0, 0, width, height);
-      sample.close();
+      if (pendingSample) {
+        // Pending frame is not the last frame.
+        // Check if duration-based replacement applies (e.g. replace last 0.5s or 1.0s)
+        const isDurationTarget = hasLastFrame && lastFrameMode === 'replace-duration' && duration > 0 &&
+          (pendingTimestamp >= Math.max(0, duration - lastFrameDuration));
 
-      // 2. Action A: Remove Gemini watermark mathematically via unblending
-      if (removalConfig.enabled !== false) {
-        const px = ctx.getImageData(roi.x, roi.y, roi.width, roi.height);
-        removeWatermark(px, alpha, region);
-        const bmp = await createImageBitmap(px);
-        ctx.drawImage(bmp, roi.x, roi.y);
-        bmp.close();
+        if (isDurationTarget) {
+          this.drawLastFrameImage(ctx, width, height, lastFrameImg, lastFrameFit);
+        } else {
+          // 1. Draw raw source frame
+          pendingSample.draw(ctx, 0, 0, width, height);
+
+          // 2. Action A: Remove Gemini watermark mathematically via unblending
+          if (removalConfig.enabled !== false) {
+            const px = ctx.getImageData(roi.x, roi.y, roi.width, roi.height);
+            removeWatermark(px, alpha, region);
+            const bmp = await createImageBitmap(px);
+            ctx.drawImage(bmp, roi.x, roi.y);
+            bmp.close();
+          }
+
+          // 3. Action B: Add custom watermark overlay in the exact same render cycle (Text or Logo)
+          if (isOverlayActive) {
+            this.adderEngine.drawWatermark(ctx, width, height, adderConfig, logoImg);
+          }
+        }
+        pendingSample.close();
+
+        // 4. Encode frame into output video stream
+        await videoSource.add(pendingTimestamp, pendingDur);
+        if (duration) onProgress({ progress: Math.min(0.99, pendingTimestamp / duration) });
       }
 
-      // 3. Action B: Add custom watermark overlay in the exact same render cycle
-      if (adderConfig && adderConfig.enabled !== false) {
-        this.adderEngine.drawWatermark(ctx, width, height, adderConfig, logoImg);
-      }
+      pendingSample = sample;
+      pendingTimestamp = timestamp;
+      pendingDur = dur;
+    }
 
-      // 4. Encode frame into output video stream
-      await videoSource.add(timestamp, dur);
-      if (duration) onProgress({ progress: Math.min(0.99, timestamp / duration) });
+    if (pendingSample) {
+      // THIS IS GUARANTEED TO BE THE LAST FRAME
+      if (hasLastFrame && lastFrameMode !== 'append') {
+        // Replace last frame with custom outro image
+        this.drawLastFrameImage(ctx, width, height, lastFrameImg, lastFrameFit);
+      } else {
+        pendingSample.draw(ctx, 0, 0, width, height);
+        if (removalConfig.enabled !== false) {
+          const px = ctx.getImageData(roi.x, roi.y, roi.width, roi.height);
+          removeWatermark(px, alpha, region);
+          const bmp = await createImageBitmap(px);
+          ctx.drawImage(bmp, roi.x, roi.y);
+          bmp.close();
+        }
+        if (isOverlayActive) {
+          this.adderEngine.drawWatermark(ctx, width, height, adderConfig, logoImg);
+        }
+      }
+      pendingSample.close();
+
+      await videoSource.add(pendingTimestamp, pendingDur);
+      if (duration) onProgress({ progress: 1.0 });
+    }
+
+    // Append mode: append extra frames at the end
+    if (hasLastFrame && lastFrameMode === 'append') {
+      const extraFrames = Math.max(1, Math.round(lastFrameDuration * frameRate));
+      const frameDur = 1 / frameRate;
+      this.drawLastFrameImage(ctx, width, height, lastFrameImg, lastFrameFit);
+      for (let i = 0; i < extraFrames; i++) {
+        lastTimestamp += frameDur;
+        await videoSource.add(lastTimestamp, frameDur);
+      }
     }
     videoSource.close();
 
@@ -332,6 +430,7 @@ class BulkVideoRemoveAndAddQueue {
       enabled: true
     };
     this.logoImg = null;
+    this.lastFrameImg = null;
 
     // DOM bindings
     this.dropzoneBulk = document.getElementById('bulk-combo-dropzone');
@@ -414,6 +513,10 @@ class BulkVideoRemoveAndAddQueue {
     this.logoImg = img;
   }
 
+  setLastFrameImage(img) {
+    this.lastFrameImg = img;
+  }
+
   setStrategy(strategy) {
     this.strategy = strategy;
   }
@@ -457,16 +560,24 @@ class BulkVideoRemoveAndAddQueue {
   async start() {
     if (this.isProcessing) return;
 
-    if (this.adderSettings.type === 'text' && !this.adderSettings.text.trim()) {
-      alert('Please enter custom watermark text before starting bulk processing.');
+    const isOverlayActive = this.adderSettings.overlayEnabled !== false && this.adderSettings.type !== 'none';
+    const lastFrameImg = this.lastFrameImg || this.adderSettings?.lastFrameImg;
+    const isLastFrameActive = !!(lastFrameImg && this.adderSettings.lastFrameEnabled !== false);
+
+    if (isOverlayActive && this.adderSettings.type === 'text' && !this.adderSettings.text?.trim()) {
+      alert('Please enter custom watermark text before starting bulk processing (or select "None").');
       return;
     }
-    if (this.adderSettings.type === 'image' && !this.logoImg) {
-      alert('Please upload a watermark logo image before starting bulk processing.');
+    if (isOverlayActive && this.adderSettings.type === 'image' && !this.logoImg) {
+      alert('Please upload a watermark logo image before starting bulk processing (or select "None").');
+      return;
+    }
+    if (!isOverlayActive && !isLastFrameActive) {
+      alert('Please configure at least one action: a Watermark Overlay (Text or Logo) and/or a Custom Last Frame.');
       return;
     }
 
-    if (this.adderSettings.type === 'text') {
+    if (isOverlayActive && this.adderSettings.type === 'text') {
       try {
         await ensureComboFontLoaded(this.adderSettings.fontFamily, this.adderSettings.fontWeight);
       } catch (e) { }
@@ -518,7 +629,10 @@ class BulkVideoRemoveAndAddQueue {
         const res = await engine.process(
           nextItem.file,
           itemRemovalConfig,
-          this.adderSettings,
+          {
+            ...this.adderSettings,
+            lastFrameImg: this.lastFrameImg || this.adderSettings?.lastFrameImg
+          },
           this.logoImg,
           {
             onProgress: ({ progress }) => {
@@ -899,8 +1013,12 @@ function initVideoRemoveAndAdd() {
   // Watermark Adder Controls
   const btnTypeText = document.getElementById('btn-combo-type-text');
   const btnTypeImage = document.getElementById('btn-combo-type-image');
+  const btnTypeNone = document.getElementById('btn-combo-type-none');
   const textControlsBox = document.getElementById('combo-text-controls');
   const imageControlsBox = document.getElementById('combo-image-controls');
+  const lastFrameControlsBox = document.getElementById('combo-lastframe-controls');
+  const checkLastFrameEnable = document.getElementById('combo-lastframe-enable');
+  const overlayControlsBox = document.getElementById('combo-adder-overlay-controls');
   const textInput = document.getElementById('combo-text-input');
   const selectFontFamily = document.getElementById('combo-font-family');
   const selectFontWeight = document.getElementById('combo-font-weight');
@@ -914,6 +1032,15 @@ function initVideoRemoveAndAdd() {
   const logoDropzone = document.getElementById('combo-logo-dropzone');
   const logoInput = document.getElementById('combo-logo-input');
   const logoThumb = document.getElementById('combo-logo-thumb');
+  const lastFrameDropzone = document.getElementById('combo-lastframe-dropzone');
+  const lastFrameInput = document.getElementById('combo-lastframe-input');
+  const lastFrameThumb = document.getElementById('combo-lastframe-thumb');
+  const lastFramePrompt = document.getElementById('combo-lastframe-prompt');
+  const selectLastFrameFit = document.getElementById('combo-lastframe-fit');
+  const selectLastFrameMode = document.getElementById('combo-lastframe-mode');
+  const btnPreviewLastFrame = document.getElementById('btn-combo-preview-lastframe');
+  const btnClearLastFrame = document.getElementById('btn-combo-clear-lastframe');
+  const lblLastFrameBadge = document.getElementById('lbl-combo-lastframe-badge');
   const anchorButtons = document.querySelectorAll('#panel-remove-add .btn-combo-anchor');
 
   const sliderAdderSize = document.getElementById('slider-combo-adder-size');
@@ -959,6 +1086,8 @@ function initVideoRemoveAndAdd() {
   let currentVideoElement = null;
   let currentPreviewFrame = null;
   let currentLogoImg = null;
+  let currentLastFrameImg = null;
+  let isPreviewingLastFrame = false;
   let currentComboMode = 'single';
   let isProcessing = false;
 
@@ -973,6 +1102,7 @@ function initVideoRemoveAndAdd() {
 
   const adderConfig = {
     type: 'text',
+    overlayEnabled: true,
     text: '© AXWON GROUP',
     fontSize: 42,
     fontFamily: 'Ubuntu, sans-serif',
@@ -986,6 +1116,11 @@ function initVideoRemoveAndAdd() {
     offsetY: 0,
     rotation: 0,
     scale: 1.0,
+    lastFrameEnabled: true,
+    lastFrameFit: 'cover',
+    lastFrameMode: 'replace-1',
+    lastFrameDuration: 1.0,
+    lastFrameImg: null,
     enabled: true
   };
 
@@ -1007,8 +1142,12 @@ function initVideoRemoveAndAdd() {
   function syncBulkSettings() {
     if (!bulkCombo) return;
     bulkCombo.setRemovalSettings(removalConfig);
-    bulkCombo.setAdderSettings(adderConfig);
+    bulkCombo.setAdderSettings({
+      ...adderConfig,
+      lastFrameImg: currentLastFrameImg
+    });
     if (currentLogoImg) bulkCombo.setLogoImage(currentLogoImg);
+    if (currentLastFrameImg) bulkCombo.setLastFrameImage(currentLastFrameImg);
   }
 
   // Helper: update all label texts
@@ -1101,26 +1240,44 @@ function initVideoRemoveAndAdd() {
       zctxClean.drawImage(cleanOffscreen, roi.x, roi.y, roi.width, roi.height, 0, 0, 200, 200);
     }
 
-    // 4. Draw cleaned frame onto main canvas scaled
-    ctx.drawImage(cleanOffscreen, 0, 0, previewW, previewH);
+    const isShowingLastFrame = isPreviewingLastFrame && currentLastFrameImg && adderConfig.lastFrameEnabled !== false;
 
-    // 5. Draw custom watermark overlay on main preview canvas
-    const previewAdderConfig = {
-      ...adderConfig,
-      fontSize: Math.round(adderConfig.fontSize * displayScale),
-      scale: adderConfig.scale * displayScale,
-      offsetX: Math.round(adderConfig.offsetX * displayScale),
-      offsetY: Math.round(adderConfig.offsetY * displayScale)
-    };
+    if (isShowingLastFrame) {
+      comboEngine.drawLastFrameImage(ctx, previewW, previewH, currentLastFrameImg, adderConfig.lastFrameFit);
+    } else {
+      // 4. Draw cleaned frame onto main canvas scaled
+      ctx.drawImage(cleanOffscreen, 0, 0, previewW, previewH);
 
-    comboEngine.adderEngine.drawWatermark(ctx, previewW, previewH, previewAdderConfig, currentLogoImg);
+      // 5. Draw custom watermark overlay on main preview canvas (if active)
+      const isOverlayActive = adderConfig.overlayEnabled !== false && adderConfig.type !== 'none';
+      if (isOverlayActive) {
+        const previewAdderConfig = {
+          ...adderConfig,
+          fontSize: Math.round(adderConfig.fontSize * displayScale),
+          scale: adderConfig.scale * displayScale,
+          offsetX: Math.round(adderConfig.offsetX * displayScale),
+          offsetY: Math.round(adderConfig.offsetY * displayScale)
+        };
+        comboEngine.adderEngine.drawWatermark(ctx, previewW, previewH, previewAdderConfig, currentLogoImg);
+      }
+    }
+
+    if (lblLastFrameBadge) {
+      if (isShowingLastFrame) {
+        lblLastFrameBadge.classList.remove('hidden');
+      } else {
+        lblLastFrameBadge.classList.add('hidden');
+      }
+    }
+
     syncBulkSettings();
   }
 
   // Seek video to specific timestamp for live preview scrubber
   function seekPreviewFrame(timeSec) {
     if (!currentVideoElement) return;
-    const targetTime = Math.max(0, Math.min(currentVideoElement.duration || 1, timeSec));
+    const totalDuration = Number.isFinite(currentVideoElement.duration) && currentVideoElement.duration > 0 ? currentVideoElement.duration : 1;
+    const targetTime = Math.max(0, Math.min(totalDuration, timeSec));
     currentVideoElement.onseeked = () => {
       const w = currentVideoElement.videoWidth || 720;
       const h = currentVideoElement.videoHeight || 1280;
@@ -1131,6 +1288,19 @@ function initVideoRemoveAndAdd() {
       cx.drawImage(currentVideoElement, 0, 0, w, h);
       currentPreviewFrame = { width: w, height: h, canvas: offscreen };
       if (lblFrameTime) lblFrameTime.textContent = `${targetTime.toFixed(1)}s`;
+
+      // Auto-preview last frame if scrubbed to the very end
+      if (currentLastFrameImg && adderConfig.lastFrameEnabled !== false && Math.abs(targetTime - totalDuration) < 0.05) {
+        isPreviewingLastFrame = true;
+        if (btnPreviewLastFrame) {
+          btnPreviewLastFrame.innerHTML = '<iconify-icon icon="ph:video-camera-bold" width="14"></iconify-icon><span>View Video Frame</span>';
+        }
+      } else {
+        isPreviewingLastFrame = false;
+        if (btnPreviewLastFrame) {
+          btnPreviewLastFrame.innerHTML = '<iconify-icon icon="ph:eye-bold" width="14"></iconify-icon><span>Preview Last Frame on Canvas</span>';
+        }
+      }
       renderPreview();
     };
     currentVideoElement.currentTime = targetTime;
@@ -1196,13 +1366,16 @@ function initVideoRemoveAndAdd() {
     renderPreview();
   });
 
-  // Custom Watermark Type switcher events
+  // Custom Watermark Overlay Type switcher events
   btnTypeText?.addEventListener('click', () => {
     adderConfig.type = 'text';
+    adderConfig.overlayEnabled = true;
     btnTypeText.classList.add('active');
     btnTypeImage?.classList.remove('active');
+    btnTypeNone?.classList.remove('active');
     textControlsBox?.classList.remove('hidden');
     imageControlsBox?.classList.add('hidden');
+    overlayControlsBox?.classList.remove('hidden');
     if (sliderAdderSize) {
       sliderAdderSize.min = 12;
       sliderAdderSize.max = 140;
@@ -1215,10 +1388,13 @@ function initVideoRemoveAndAdd() {
 
   btnTypeImage?.addEventListener('click', () => {
     adderConfig.type = 'image';
+    adderConfig.overlayEnabled = true;
     btnTypeImage.classList.add('active');
     btnTypeText?.classList.remove('active');
+    btnTypeNone?.classList.remove('active');
     imageControlsBox?.classList.remove('hidden');
     textControlsBox?.classList.add('hidden');
+    overlayControlsBox?.classList.remove('hidden');
     if (sliderAdderSize) {
       sliderAdderSize.min = 0.1;
       sliderAdderSize.max = 2.0;
@@ -1226,6 +1402,147 @@ function initVideoRemoveAndAdd() {
       sliderAdderSize.value = adderConfig.scale;
     }
     updateLabels();
+    renderPreview();
+  });
+
+  btnTypeNone?.addEventListener('click', () => {
+    adderConfig.type = 'none';
+    adderConfig.overlayEnabled = false;
+    btnTypeNone.classList.add('active');
+    btnTypeText?.classList.remove('active');
+    btnTypeImage?.classList.remove('active');
+    textControlsBox?.classList.add('hidden');
+    imageControlsBox?.classList.add('hidden');
+    overlayControlsBox?.classList.add('hidden');
+    renderPreview();
+  });
+
+  // Last Frame Active Checkbox
+  checkLastFrameEnable?.addEventListener('change', (e) => {
+    adderConfig.lastFrameEnabled = e.target.checked;
+    if (!adderConfig.lastFrameEnabled && isPreviewingLastFrame) {
+      isPreviewingLastFrame = false;
+      if (btnPreviewLastFrame) {
+        btnPreviewLastFrame.innerHTML = '<iconify-icon icon="ph:eye-bold" width="14"></iconify-icon><span>Preview Last Frame on Canvas</span>';
+      }
+    }
+    syncBulkSettings();
+    renderPreview();
+  });
+
+  // Last Frame Dropzone & File Handling
+  lastFrameDropzone?.addEventListener('click', () => {
+    if (lastFrameInput) lastFrameInput.click();
+  });
+
+  lastFrameDropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    lastFrameDropzone.classList.add('drag-over');
+  });
+
+  lastFrameDropzone?.addEventListener('dragleave', () => {
+    lastFrameDropzone.classList.remove('drag-over');
+  });
+
+  lastFrameDropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    lastFrameDropzone.classList.remove('drag-over');
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleLastFrameFile(e.dataTransfer.files[0]);
+    }
+  });
+
+  lastFrameInput?.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleLastFrameFile(e.target.files[0]);
+    }
+  });
+
+  function handleLastFrameFile(file) {
+    if (!file.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      currentLastFrameImg = img;
+      adderConfig.lastFrameImg = img;
+      adderConfig.lastFrameEnabled = true;
+      if (checkLastFrameEnable) checkLastFrameEnable.checked = true;
+      bulkCombo?.setLastFrameImage(img);
+      if (lastFrameThumb) {
+        lastFrameThumb.src = url;
+        lastFrameThumb.classList.remove('hidden');
+      }
+      if (lastFramePrompt) lastFramePrompt.classList.add('hidden');
+      if (btnClearLastFrame) btnClearLastFrame.classList.remove('hidden');
+      isPreviewingLastFrame = true;
+      if (btnPreviewLastFrame) {
+        btnPreviewLastFrame.innerHTML = '<iconify-icon icon="ph:video-camera-bold" width="14"></iconify-icon><span>View Video Frame</span>';
+      }
+      syncBulkSettings();
+      renderPreview();
+    };
+    img.src = url;
+  }
+
+  btnClearLastFrame?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    currentLastFrameImg = null;
+    adderConfig.lastFrameImg = null;
+    bulkCombo?.setLastFrameImage(null);
+    if (lastFrameThumb) {
+      lastFrameThumb.src = '';
+      lastFrameThumb.classList.add('hidden');
+    }
+    if (lastFramePrompt) lastFramePrompt.classList.remove('hidden');
+    if (btnClearLastFrame) btnClearLastFrame.classList.add('hidden');
+    if (lastFrameInput) lastFrameInput.value = '';
+    isPreviewingLastFrame = false;
+    if (btnPreviewLastFrame) {
+      btnPreviewLastFrame.innerHTML = '<iconify-icon icon="ph:eye-bold" width="14"></iconify-icon><span>Preview Last Frame on Canvas</span>';
+    }
+    syncBulkSettings();
+    renderPreview();
+  });
+
+  selectLastFrameFit?.addEventListener('change', (e) => {
+    adderConfig.lastFrameFit = e.target.value;
+    syncBulkSettings();
+    if (isPreviewingLastFrame) renderPreview();
+  });
+
+  selectLastFrameMode?.addEventListener('change', (e) => {
+    const val = e.target.value;
+    if (val === 'replace-1') {
+      adderConfig.lastFrameMode = 'replace-1';
+      adderConfig.lastFrameDuration = 1 / 30;
+    } else if (val === 'replace-0.5') {
+      adderConfig.lastFrameMode = 'replace-duration';
+      adderConfig.lastFrameDuration = 0.5;
+    } else if (val === 'replace-1.0') {
+      adderConfig.lastFrameMode = 'replace-duration';
+      adderConfig.lastFrameDuration = 1.0;
+    } else if (val === 'append-1.0') {
+      adderConfig.lastFrameMode = 'append';
+      adderConfig.lastFrameDuration = 1.0;
+    }
+    syncBulkSettings();
+  });
+
+  btnPreviewLastFrame?.addEventListener('click', () => {
+    if (!currentLastFrameImg) {
+      alert('Please upload a custom image for the last frame first.');
+      return;
+    }
+    if (!adderConfig.lastFrameEnabled) {
+      adderConfig.lastFrameEnabled = true;
+      if (checkLastFrameEnable) checkLastFrameEnable.checked = true;
+    }
+    isPreviewingLastFrame = !isPreviewingLastFrame;
+    if (btnPreviewLastFrame) {
+      btnPreviewLastFrame.innerHTML = isPreviewingLastFrame
+        ? '<iconify-icon icon="ph:video-camera-bold" width="14"></iconify-icon><span>View Video Frame</span>'
+        : '<iconify-icon icon="ph:eye-bold" width="14"></iconify-icon><span>Preview Last Frame on Canvas</span>';
+    }
     renderPreview();
   });
 
@@ -1707,16 +2024,23 @@ function initVideoRemoveAndAdd() {
   btnExport?.addEventListener('click', async () => {
     if (!currentVideoFile || isProcessing) return;
 
-    if (adderConfig.type === 'text' && !adderConfig.text.trim()) {
-      alert('Please enter text for your watermark.');
+    const isOverlayActive = adderConfig.overlayEnabled !== false && adderConfig.type !== 'none';
+    const isLastFrameActive = !!(currentLastFrameImg && adderConfig.lastFrameEnabled !== false);
+
+    if (isOverlayActive && adderConfig.type === 'text' && !adderConfig.text.trim()) {
+      alert('Please enter text for your watermark, or select "None" if you only want to set the last frame.');
       return;
     }
-    if (adderConfig.type === 'image' && !currentLogoImg) {
-      alert('Please upload a logo image for your watermark.');
+    if (isOverlayActive && adderConfig.type === 'image' && !currentLogoImg) {
+      alert('Please upload a logo image for your watermark, or select "None" if you only want to set the last frame.');
+      return;
+    }
+    if (!isOverlayActive && !isLastFrameActive) {
+      alert('Please configure at least one action: a Watermark Overlay (Text or Logo) and/or a Custom Last Frame.');
       return;
     }
 
-    if (adderConfig.type === 'text') {
+    if (isOverlayActive && adderConfig.type === 'text') {
       try {
         await ensureComboFontLoaded(adderConfig.fontFamily, adderConfig.fontWeight);
       } catch (e) { }
@@ -1741,13 +2065,26 @@ function initVideoRemoveAndAdd() {
       const res = await engine.process(
         currentVideoFile,
         removalConfig,
-        adderConfig,
+        {
+          ...adderConfig,
+          lastFrameImg: currentLastFrameImg
+        },
         currentLogoImg,
         {
           onProgress: ({ progress }) => {
             const pct = Math.round(progress * 100);
             if (progressBar) progressBar.style.width = `${pct}%`;
-            if (progressText) progressText.textContent = `${pct}% - 1-pass rendering (lossless quality)`;
+            if (progressText) {
+              let modeDesc = 'lossless quality';
+              if (isOverlayActive && isLastFrameActive) {
+                modeDesc = adderConfig.type === 'image' ? 'logo + last frame' : 'text + last frame';
+              } else if (isLastFrameActive) {
+                modeDesc = 'custom last frame';
+              } else if (isOverlayActive) {
+                modeDesc = adderConfig.type === 'image' ? 'logo watermark' : 'text watermark';
+              }
+              progressText.textContent = `${pct}% - 1-pass rendering (${modeDesc})`;
+            }
           }
         }
       );
@@ -1760,21 +2097,35 @@ function initVideoRemoveAndAdd() {
       statusContainer?.classList.add('hidden');
       resultsArea?.classList.remove('hidden');
 
+      let resultTitle = 'Video Ready (Gemini Watermark Removed &amp; New Watermark Added in 1 Pass!)';
+      if (isOverlayActive && isLastFrameActive) {
+        resultTitle = 'Video Ready (Gemini Watermark Removed, Watermark Added &amp; Custom Last Frame Applied!)';
+      } else if (isLastFrameActive) {
+        resultTitle = 'Video Ready (Gemini Watermark Removed &amp; Custom Last Frame Applied!)';
+      }
+
+      const dlName = (isOverlayActive && isLastFrameActive)
+        ? `cleaned_branded_outro_${currentVideoFile.name}`
+        : isLastFrameActive
+          ? `cleaned_lastframe_${currentVideoFile.name}`
+          : `cleaned_watermarked_${currentVideoFile.name}`;
+      const dlText = 'Download Final MP4';
+
       resultsArea.innerHTML = `
         <div class="result-card p-4">
           <div class="result-header mb-3">
             <span class="text-green-600 font-semibold flex items-center gap-1">
               <iconify-icon icon="ph:check-circle-fill" width="20"></iconify-icon>
-              Video Ready (Gemini Watermark Removed &amp; New Watermark Added in 1 Pass!)
+              ${resultTitle}
             </span>
           </div>
           <div class="result-video-preview mb-4 text-center">
             <video src="${res.url}" controls autoplay playsinline loop class="max-w-full rounded-md shadow-md mx-auto" style="max-height: 480px;"></video>
           </div>
           <div class="result-actions flex justify-center gap-3">
-            <a href="${res.url}" download="cleaned_watermarked_${currentVideoFile.name}" class="btn btn-primary">
+            <a href="${res.url}" download="${dlName}" class="btn btn-primary">
               <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
-              Download Watermarked MP4
+              ${dlText}
             </a>
             <button type="button" class="btn btn-secondary" onclick="document.getElementById('combo-stage-card').classList.remove('hidden'); document.getElementById('combo-results').classList.add('hidden');">
               <iconify-icon icon="ph:sliders-horizontal"></iconify-icon> Adjust Settings
