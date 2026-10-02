@@ -2097,11 +2097,20 @@ function initVideoRemoveAndAdd() {
       statusContainer?.classList.add('hidden');
       resultsArea?.classList.remove('hidden');
 
-      let resultTitle = 'Video Ready (Gemini Watermark Removed &amp; New Watermark Added in 1 Pass!)';
+      let resultHeadline = 'Gemini Watermark Removed &amp; New Watermark Added!';
+      let resultSubtitle = 'Rendered in a single lossless pass with original pixel quality &amp; audio preserved.';
       if (isOverlayActive && isLastFrameActive) {
-        resultTitle = 'Video Ready (Gemini Watermark Removed, Watermark Added &amp; Custom Last Frame Applied!)';
+        resultHeadline = adderConfig.type === 'image'
+          ? 'Watermark Removed, Logo &amp; Custom Last Frame Applied!'
+          : 'Watermark Removed, Typography &amp; Custom Last Frame Applied!';
+        resultSubtitle = 'Both actions applied simultaneously with exact original video quality &amp; lossless audio.';
       } else if (isLastFrameActive) {
-        resultTitle = 'Video Ready (Gemini Watermark Removed &amp; Custom Last Frame Applied!)';
+        resultHeadline = 'Gemini Watermark Removed &amp; Custom Last Frame Applied!';
+        resultSubtitle = 'Custom outro frame applied with exact original video quality &amp; lossless audio.';
+      } else if (isOverlayActive) {
+        resultHeadline = adderConfig.type === 'image'
+          ? 'Gemini Watermark Removed &amp; Logo Watermark Added!'
+          : 'Gemini Watermark Removed &amp; Custom Typography Added!';
       }
 
       const dlName = (isOverlayActive && isLastFrameActive)
@@ -2112,23 +2121,32 @@ function initVideoRemoveAndAdd() {
       const dlText = 'Download Final MP4';
 
       resultsArea.innerHTML = `
-        <div class="result-card p-4">
-          <div class="result-header mb-3">
-            <span class="text-green-600 font-semibold flex items-center gap-1">
-              <iconify-icon icon="ph:check-circle-fill" width="20"></iconify-icon>
-              ${resultTitle}
-            </span>
+        <div class="combo-card combo-stage-card combo-result-card">
+          <div class="result-header-centered">
+            <div class="result-status-badge">
+              <iconify-icon icon="ph:check-circle-fill" width="18"></iconify-icon>
+              <span>Video Ready!</span>
+            </div>
+            <h3 class="result-title-text">${resultHeadline}</h3>
+            <p class="result-subtitle-text">${resultSubtitle}</p>
           </div>
-          <div class="result-video-preview mb-4 text-center">
-            <video src="${res.url}" controls autoplay playsinline loop class="max-w-full rounded-md shadow-md mx-auto" style="max-height: 480px;"></video>
+
+          <div class="result-video-wrapper">
+            <video src="${res.url}" controls autoplay playsinline loop></video>
           </div>
-          <div class="result-actions flex justify-center gap-3">
-            <a href="${res.url}" download="${dlName}" class="btn btn-primary">
-              <iconify-icon icon="ph:download-simple-bold" width="16"></iconify-icon>
-              ${dlText}
+
+          <div class="result-actions-row">
+            <a href="${res.url}" download="${dlName}" class="btn-result-download">
+              <iconify-icon icon="ph:download-simple-bold" width="18"></iconify-icon>
+              <span>${dlText}</span>
             </a>
-            <button type="button" class="btn btn-secondary" onclick="document.getElementById('combo-stage-card').classList.remove('hidden'); document.getElementById('combo-results').classList.add('hidden');">
-              <iconify-icon icon="ph:sliders-horizontal"></iconify-icon> Adjust Settings
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('combo-stage-card').classList.remove('hidden'); document.getElementById('combo-results').classList.add('hidden'); if (typeof smoothScrollTo === 'function') smoothScrollTo(document.getElementById('combo-stage-card'));">
+              <iconify-icon icon="ph:sliders-horizontal" width="16"></iconify-icon>
+              <span>Adjust Settings</span>
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('combo-results').classList.add('hidden'); document.getElementById('btn-combo-change-video')?.click();">
+              <iconify-icon icon="ph:arrow-clockwise-bold" width="16"></iconify-icon>
+              <span>Upload New Video</span>
             </button>
           </div>
         </div>
